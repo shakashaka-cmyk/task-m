@@ -4,3 +4,11 @@ header {
     padding: 10px;
     text-align: center;
 }
+
+.task-list li{
+    display: none;
+}
+
+#add-task-form {
+    display: none;
+}
