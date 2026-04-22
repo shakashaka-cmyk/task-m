@@ -11,22 +11,29 @@
 <header>
     <h1 class="header-text">TaskMan</h1>
 </header>
-<div>
-    <div>
-        <h2>課題一覧</h2>
-    </div>
-    <ul>
-        <li class="input1"></li>
-        <li class="input2"></li>
-        <li class="input3"></li>
-        <li class="input4"></li>
-        <li class="input5"></li>
-        <li class="input6"></li>
-        <li class="input7"></li>
-        <li class="input8"></li>
+
+
+<div id="displaying">
+    <h2>課題一覧</h2>
+    <ul id="task-list">
     </ul>
+    <div>
+        <button id="add-button" type="button">課題を追加</button>
+    </div>
 </div>
-<button type="submit">課題を追加</button>
-<script src="main.ts"></script>
+
+<form id="add-task-form">
+    <input type="text" id="title" placeholder="タイトル">
+    <input type="date" id="deadline">
+
+    <select id="importance">
+        <option value="1">高</option>
+        <option value="2">中</option>
+        <option value="3">低</option>
+    </select>
+    <button type="submit" id="add-task-button">追加</button>
+</form>
+
+<script type="module" src="main.js"></script>
 </body>
 </html>
