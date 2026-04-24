@@ -1,19 +1,19 @@
 import type { Task } from "./task";
 
-const addTaskForm = document.getElementById("add-task-form");
+const addTaskDisplay = document.getElementById("add-task-display");
 const addButton = document.getElementById("add-button");
 const displaying = document.getElementById("displaying");
 const tasklist = document.getElementById("task-list");  
 
-if (addButton && addTaskForm && displaying) { 
+if (addButton && addTaskDisplay && displaying) { 
     addButton.addEventListener('click', () => {
         displaying.style.display = "none";
-        addTaskForm.style.display = "block";
+        addTaskDisplay.style.display = "block";
     })
 };
 
 
-addTaskForm?.addEventListener('submit', (e) => {
+addTaskDisplay?.addEventListener('submit', (e) => {
     e.preventDefault();
     
     const title = (document.getElementById("title") as HTMLInputElement).value;
@@ -26,7 +26,7 @@ addTaskForm?.addEventListener('submit', (e) => {
     id: Date.now(),
     title,
     deadline,
-    importance: importance as 1 | 2 | 3,
+    importance: importance as 3 | 2 | 1,
     completed: false
     }
     console.log(task);
@@ -39,15 +39,26 @@ addTaskForm?.addEventListener('submit', (e) => {
 
 const renderTask = (task: Task) => {
     const li = document.createElement("li");
-    li.textContent = `${task.title} | ${task.deadline} | ${task.importance}`;
+    li.textContent = `${task.title} | ${task.deadline} | ${renderTaskImportance(task.importance)}`;
     tasklist?.appendChild(li);
     console.log("task rendered");
 }
 
+const renderTaskImportance = (importance: 3 | 2 | 1): string => {
+    switch (importance) {
+        case 3:
+            return "高";
+        case 2:
+            return "中";
+        case 1:
+            return "低";
+    }
+}
+
 function changeDisplay() {
-    if (displaying && addTaskForm) {
+    if (displaying && addTaskDisplay) {
         displaying.style.display = "block";
-        addTaskForm.style.display = "none";
+        addTaskDisplay.style.display = "none";
         console.log("display changed");
     }
 }

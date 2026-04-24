@@ -1,15 +1,15 @@
-const addTaskForm = document.getElementById("add-task-form");
+const addTaskDisplay = document.getElementById("add-task-display");
 const addButton = document.getElementById("add-button");
 const displaying = document.getElementById("displaying");
 const tasklist = document.getElementById("task-list");
-if (addButton && addTaskForm && displaying) {
+if (addButton && addTaskDisplay && displaying) {
     addButton.addEventListener('click', () => {
         displaying.style.display = "none";
-        addTaskForm.style.display = "block";
+        addTaskDisplay.style.display = "block";
     });
 }
 ;
-addTaskForm === null || addTaskForm === void 0 ? void 0 : addTaskForm.addEventListener('submit', (e) => {
+addTaskDisplay === null || addTaskDisplay === void 0 ? void 0 : addTaskDisplay.addEventListener('submit', (e) => {
     e.preventDefault();
     const title = document.getElementById("title").value;
     const deadline = document.getElementById("deadline").value;
@@ -30,14 +30,24 @@ addTaskForm === null || addTaskForm === void 0 ? void 0 : addTaskForm.addEventLi
 });
 const renderTask = (task) => {
     const li = document.createElement("li");
-    li.textContent = `${task.title} | ${task.deadline} | ${task.importance}`;
+    li.textContent = `${task.title} | ${task.deadline} | ${renderTaskImportance(task.importance)}`;
     tasklist === null || tasklist === void 0 ? void 0 : tasklist.appendChild(li);
     console.log("task rendered");
 };
+const renderTaskImportance = (importance) => {
+    switch (importance) {
+        case 3:
+            return "高";
+        case 2:
+            return "中";
+        case 1:
+            return "低";
+    }
+};
 function changeDisplay() {
-    if (displaying && addTaskForm) {
+    if (displaying && addTaskDisplay) {
         displaying.style.display = "block";
-        addTaskForm.style.display = "none";
+        addTaskDisplay.style.display = "none";
         console.log("display changed");
     }
 }

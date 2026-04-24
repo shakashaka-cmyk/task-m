@@ -9,6 +9,23 @@ header {
     display: none;
 }
 
-#add-task-form {
+#add-task-text {
+    display: flex;
+}
+
+#add-task-text p {
+    margin: 10px
+;}
+    
+
+#add-task-display {
     display: none;
+}
+
+#change-task-display {
+    display: none;
+}
+
+#change-task-text {
+    display: flex;
 }

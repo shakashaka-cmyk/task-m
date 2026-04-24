@@ -22,17 +22,44 @@
     </div>
 </div>
 
-<form id="add-task-form">
-    <input type="text" id="title" placeholder="タイトル">
-    <input type="date" id="deadline">
+<div id="add-task-display">
+    <div id="add-task-text">
+        <p class="assignment-p">|課題名</p>
+        <p class="deadline-p">|締め切り</p>
+        <p class="importance-p">|優先度</p>
+    </div>
+    <form id="add-task-form">
+        <input type="text" id="title" placeholder="タイトル">
+        <input type="date" id="deadline" placeholder="締め切り">
 
-    <select id="importance">
-        <option value="1">高</option>
-        <option value="2">中</option>
-        <option value="3">低</option>
-    </select>
-    <button type="submit" id="add-task-button">追加</button>
-</form>
+        <select id="importance">
+            <option value="3">高</option>
+            <option value="2">中</option>
+            <option value="1">低</option>
+        </select>
+        <button type="submit" id="add-task-button">追加</button>
+    </form>
+</div>
+
+<div id="change-task-display">
+    <div id="change-task-text">
+        <p class="assignment-p">|課題名</p>
+        <p class="deadline-p">|締め切り</p>
+        <p class="importance-p">|優先度</p>
+    </div>
+        
+     <form id="change-task-form">
+        <input type="text" id="change-title" placeholder="タイトル">
+        <input type="date" id="change-deadline" placeholder="締め切り">
+
+        <select id="change-importance">
+            <option value="3">高</option>
+            <option value="2">中</option>
+            <option value="1">低</option>
+        </select>
+        <button type="submit" id="change-task-button">変更</button>
+    </form>
+</div>
 
 <script type="module" src="main.js"></script>
 </body>

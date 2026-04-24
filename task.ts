@@ -2,6 +2,6 @@ export type Task = {
   id: number;
   title: string;
   deadline: string;
-  importance: 1 | 2 | 3;
+  importance: 3 | 2 | 1;
   completed: boolean;
 };
