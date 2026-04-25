@@ -4,15 +4,23 @@ const addTaskDisplay = document.getElementById("add-task-display");
 const addButton = document.getElementById("add-button");
 const displaying = document.getElementById("displaying");
 const tasklist = document.getElementById("task-list");  
+const addTaskForm = document.getElementById("add-task-form") as HTMLFormElement;
+const editTaskDisplay = document.getElementById("edit-task-display");
+const editTaskButton = document.getElementById("edit-task-button");
+const editCancelButton = document.getElementById("edit-cancel-button");
+const deleteTaskButton = document.getElementById("delete-task-button");
 
+//課題追加フォームへの遷移
 if (addButton && addTaskDisplay && displaying) { 
     addButton.addEventListener('click', () => {
         displaying.style.display = "none";
         addTaskDisplay.style.display = "block";
+
+        addTaskForm.reset();
     })
 };
 
-
+//課題追加フォームの送信イベント
 addTaskDisplay?.addEventListener('submit', (e) => {
     e.preventDefault();
     
@@ -29,21 +37,44 @@ addTaskDisplay?.addEventListener('submit', (e) => {
     importance: importance as 3 | 2 | 1,
     completed: false
     }
-    console.log(task);
-    console.log("①");
-    changeDisplay();
-    console.log("②");
-    renderTask(task);
-    console.log("③");
+    BackDisplay();
+    tasks.push(task);
+    renderAllTasks();
+
 });
 
-const renderTask = (task: Task) => {
-    const li = document.createElement("li");
-    li.textContent = `${task.title} | ${task.deadline} | ${renderTaskImportance(task.importance)}`;
-    tasklist?.appendChild(li);
-    console.log("task rendered");
+//タスク表示
+let editingTaskId: number | null = null; //編集中のタスクIDを保持
+let tasks: Task[] = [];
+
+const renderAllTasks = () => {
+    if (!displaying || !tasklist || !editTaskDisplay) return;
+
+    if (!tasklist) return;
+
+    tasklist.innerHTML = "";
+    tasks.forEach(task=>{
+        const li = document.createElement("li");
+        const editButton = document.createElement("button");
+        //編集ボタンのUI・機能作成
+        editButton.textContent = "編集";
+        editButton.addEventListener("click", () => {
+        displaying.style.display = "none";
+        editTaskDisplay.style.display = "block";
+
+            (document.getElementById("edit-title") as HTMLInputElement).value = task.title;
+            (document.getElementById("edit-deadline") as HTMLInputElement).value = task.deadline;
+            (document.getElementById("edit-importance") as HTMLSelectElement).value = String(task.importance);
+            
+            editingTaskId = task.id;
+        });
+        li.textContent = `${task.title} | ${task.deadline} | ${renderTaskImportance(task.importance)}`;
+        li.appendChild(editButton);
+        tasklist.appendChild(li);
+    })
 }
 
+//タスクの重要性表示
 const renderTaskImportance = (importance: 3 | 2 | 1): string => {
     switch (importance) {
         case 3:
@@ -55,10 +86,52 @@ const renderTaskImportance = (importance: 3 | 2 | 1): string => {
     }
 }
 
-function changeDisplay() {
-    if (displaying && addTaskDisplay) {
+//displayingへの切り替え
+function BackDisplay() {
+    if ((displaying && addTaskDisplay) && (addTaskDisplay.style.display === "block")) {
         displaying.style.display = "block";
         addTaskDisplay.style.display = "none";
-        console.log("display changed");
+    } else if ((displaying && editTaskDisplay) && (editTaskDisplay.style.display === "block")) {
+        displaying.style.display = "block";
+        editTaskDisplay.style.display = "none";
     }
+}
+
+//editTaskButtonのアドイベ
+if (editTaskButton && editTaskDisplay && displaying) {      
+editTaskDisplay.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const title = (document.getElementById("edit-title") as HTMLInputElement).value;
+    const deadline = (document.getElementById("edit-deadline") as HTMLInputElement).value;
+    const importance = Number(
+    (document.getElementById("edit-importance") as HTMLSelectElement).value
+  ) as 1|2|3;
+
+    const task = tasks.find(t => t.id === editingTaskId)
+    if (!task) return;
+
+    task.title = title;
+    task.deadline = deadline;
+    task.importance = importance;
+
+    renderAllTasks();
+    BackDisplay();
+})}
+
+//editCancelButtonのアドイベ
+if (editCancelButton) {
+    editCancelButton.addEventListener("click", () => {
+        BackDisplay();
+    })
+}
+
+//deleteTaskButtonのアドイベ
+if (deleteTaskButton) {
+    deleteTaskButton.addEventListener("click", () => {
+        if (editingTaskId === null) return;
+        tasks = tasks.filter(t => t.id !== editingTaskId);
+        renderAllTasks();
+        BackDisplay();
+    })
 }

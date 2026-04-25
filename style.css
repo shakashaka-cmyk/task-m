@@ -22,10 +22,10 @@ header {
     display: none;
 }
 
-#change-task-display {
+#edit-task-display {
     display: none;
 }
 
-#change-task-text {
+#edit-task-text {
     display: flex;
 }

@@ -41,23 +41,25 @@
     </form>
 </div>
 
-<div id="change-task-display">
-    <div id="change-task-text">
+<div id="edit-task-display">
+    <div id="edit-task-text">
         <p class="assignment-p">|課題名</p>
         <p class="deadline-p">|締め切り</p>
         <p class="importance-p">|優先度</p>
     </div>
         
-     <form id="change-task-form">
-        <input type="text" id="change-title" placeholder="タイトル">
-        <input type="date" id="change-deadline" placeholder="締め切り">
+     <form id="edit-task-form">
+        <input type="text" id="edit-title" placeholder="タイトル">
+        <input type="date" id="edit-deadline" placeholder="締め切り">
 
-        <select id="change-importance">
+        <select id="edit-importance">
             <option value="3">高</option>
             <option value="2">中</option>
             <option value="1">低</option>
         </select>
-        <button type="submit" id="change-task-button">変更</button>
+        <button type="submit" id="edit-task-button">編集</button>
+        <button type="button" id="edit-cancel-button">キャンセル</button>
+        <button type="button" id="delete-task-button">削除</button>
     </form>
 </div>
 
