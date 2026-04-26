@@ -9,6 +9,7 @@ const editTaskDisplay = document.getElementById("edit-task-display");
 const editTaskButton = document.getElementById("edit-task-button");
 const editCancelButton = document.getElementById("edit-cancel-button");
 const deleteTaskButton = document.getElementById("delete-task-button");
+const completeTaskButton = document.getElementById("complete-task-button");
 
 //課題追加フォームへの遷移
 if (addButton && addTaskDisplay && displaying) { 
@@ -48,7 +49,7 @@ let editingTaskId: number | null = null; //編集中のタスクIDを保持
 let tasks: Task[] = [];
 
 const renderAllTasks = () => {
-    if (!displaying || !tasklist || !editTaskDisplay) return;
+    if (!displaying || !tasklist || !editTaskDisplay || !completeTaskButton) return;
 
     if (!tasklist) return;
 
@@ -65,10 +66,15 @@ const renderAllTasks = () => {
             (document.getElementById("edit-title") as HTMLInputElement).value = task.title;
             (document.getElementById("edit-deadline") as HTMLInputElement).value = task.deadline;
             (document.getElementById("edit-importance") as HTMLSelectElement).value = String(task.importance);
-            
+            (document.getElementById("complete-task-button") as HTMLButtonElement).textContent = task.completed ? "未完了に戻す" : "完了";
             editingTaskId = task.id;
         });
-        li.textContent = `${task.title} | ${task.deadline} | ${renderTaskImportance(task.importance)}`;
+        completeTaskButton.textContent = task.completed ? "未完了に戻す" : "完了";
+        completeTaskButton.addEventListener("click", () => {
+            task.completed = !task.completed;
+            renderAllTasks();
+        })
+        li.textContent = `${task.title} | ${task.deadline} | ${renderTaskImportance(task.importance)} | ${task.completed ? "完了" : "未完了"}`;
         li.appendChild(editButton);
         tasklist.appendChild(li);
     })
@@ -135,3 +141,4 @@ if (deleteTaskButton) {
         BackDisplay();
     })
 }
+
