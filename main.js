@@ -2,6 +2,7 @@ const addTaskDisplay = document.getElementById("add-task-display");
 const addButton = document.getElementById("add-button");
 const displaying = document.getElementById("displaying");
 const tasklist = document.getElementById("task-list");
+const endlist = document.getElementById("end-list");
 const addTaskForm = document.getElementById("add-task-form");
 const editTaskDisplay = document.getElementById("edit-task-display");
 const editTaskButton = document.getElementById("edit-task-button");
@@ -38,11 +39,14 @@ addTaskDisplay === null || addTaskDisplay === void 0 ? void 0 : addTaskDisplay.a
 let editingTaskId = null; //編集中のタスクIDを保持
 let tasks = [];
 const renderAllTasks = () => {
-    if (!displaying || !tasklist || !editTaskDisplay || !completeTaskButton)
+    if (!displaying || !tasklist || !editTaskDisplay || !completeTaskButton || !endlist)
         return;
     if (!tasklist)
         return;
+    if (!endlist)
+        return;
     tasklist.innerHTML = "";
+    endlist.innerHTML = "";
     tasks.forEach(task => {
         const li = document.createElement("li");
         const editButton = document.createElement("button");
@@ -64,7 +68,12 @@ const renderAllTasks = () => {
         });
         li.textContent = `${task.title} | ${task.deadline} | ${renderTaskImportance(task.importance)} | ${task.completed ? "完了" : "未完了"}`;
         li.appendChild(editButton);
-        tasklist.appendChild(li);
+        if ((endlist) && (task.completed)) {
+            endlist.appendChild(li);
+        }
+        else {
+            tasklist.appendChild(li);
+        }
     });
 };
 //タスクの重要性表示
@@ -123,3 +132,4 @@ if (deleteTaskButton) {
     });
 }
 export {};
+//達成課題の移動
