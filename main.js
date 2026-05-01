@@ -9,6 +9,7 @@ const editTaskButton = document.getElementById("edit-task-button");
 const editCancelButton = document.getElementById("edit-cancel-button");
 const deleteTaskButton = document.getElementById("delete-task-button");
 const completeTaskButton = document.getElementById("complete-task-button");
+const calendar = document.getElementById("calendar");
 //課題追加フォームへの遷移
 if (addButton && addTaskDisplay && displaying) {
     addButton.addEventListener('click', () => {
@@ -131,5 +132,13 @@ if (deleteTaskButton) {
         BackDisplay();
     });
 }
+//カレンダー表示
+if (calendar) {
+    for (let i = 1; i <= 31; i++) {
+        const day = document.createElement("div");
+        day.classList.add("day");
+        day.textContent = String(i);
+        calendar.appendChild(day);
+    }
+}
 export {};
-//達成課題の移動

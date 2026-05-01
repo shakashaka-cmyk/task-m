@@ -29,3 +29,15 @@ header {
 #edit-task-text {
     display: flex;
 }
+
+#calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+}
+
+.day {
+    border: 1px solid black;
+    min-height: 100px;
+    padding: 10px;
+}
