@@ -1,0 +1,11 @@
+{
+    "scripts": {
+    "dev": "vite"
+  },
+  "dependencies": {
+    "@holiday-jp/holiday_jp": "^2.5.1"
+  },
+  "devDependencies": {
+    "vite": "^8.0.10"
+  }
+}

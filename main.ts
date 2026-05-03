@@ -1,4 +1,5 @@
 import type { Task } from "./task";
+import * as holiday_jp from "@holiday-jp/holiday_jp";
 
 const addTaskDisplay = document.getElementById("add-task-display");
 const addButton = document.getElementById("add-button");
@@ -12,6 +13,9 @@ const editCancelButton = document.getElementById("edit-cancel-button");
 const deleteTaskButton = document.getElementById("delete-task-button");
 const completeTaskButton = document.getElementById("complete-task-button");
 const calendar = document.getElementById("calendar")
+const nextMonthButton = document.getElementById("next-month")
+const prevMonthButton = document.getElementById("prev-month")
+const dateDisplay = document.getElementById("date")
 
 //課題追加フォームへの遷移
 if (addButton && addTaskDisplay && displaying) { 
@@ -151,11 +155,71 @@ if (deleteTaskButton) {
 }
 
 //カレンダー表示
-if (calendar) {
-    for (let i=1; i<=31; i++) {
-        const day = document.createElement("div")
-        day.classList.add("day")
-        day.textContent = String(i)
-        calendar.appendChild(day)
+let currentYear = 2026
+let currentMonth = 5
+
+
+
+//カレンダー表示関数
+function renderCalendar(currentYear :number, currentMonth :number) {
+    console.log("render")
+    if (calendar && dateDisplay) {
+        calendar.innerHTML =  ""
+        const firstDay =
+        new Date(currentYear, currentMonth, 1).getDay()
+        const lastDate =
+        new Date(currentYear, currentMonth + 1, 0).getDate();
+        for (let i = 0; i < firstDay; i++) {
+            const empty = document.createElement("div");
+            calendar.appendChild(empty);
+        }
+        for (let day = 1; day <= lastDate; day++) {
+            const dayElement = document.createElement("div");
+            dayElement.classList.add("day");
+            const date = new Date(currentYear, currentMonth, day);
+            const dayOfWeek = date.getDay();
+
+            if (dayOfWeek === 0) {
+                dayElement.classList.add("sun");
+            }
+
+            if (dayOfWeek === 6) {
+                dayElement.classList.add("sat");
+            }
+
+            if (holiday_jp.isHoliday(date)) {
+                dayElement.classList.add("holiday");
+            }
+
+            dayElement.textContent = String(day);
+            calendar.appendChild(dayElement);
+            console.log(holiday_jp.isHoliday(date));
+            console.log(date)
+        }
+        dateDisplay.textContent = currentYear + "年" + (currentMonth+1) + "月"
     }
 }
+
+nextMonthButton?.addEventListener("click", () => {
+      currentMonth++;
+
+    if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+    }
+
+    renderCalendar(currentYear, currentMonth);
+})
+
+prevMonthButton?.addEventListener("click", () => {
+      currentMonth--;
+
+    if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+    }
+
+    renderCalendar(currentYear, currentMonth);
+})
+
+renderCalendar(currentYear, currentMonth)
