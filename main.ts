@@ -47,7 +47,7 @@ addTaskDisplay?.addEventListener('submit', (e) => {
     BackDisplay();
     tasks.push(task);
     renderAllTasks();
-
+    renderCalendar(currentYear, currentMonth);
 });
 
 //タスク表示
@@ -141,6 +141,7 @@ editTaskDisplay.addEventListener("submit", (e) => {
 if (editCancelButton) {
     editCancelButton.addEventListener("click", () => {
         BackDisplay();
+        renderCalendar(currentYear, currentMonth)
     })
 }
 
@@ -150,6 +151,7 @@ if (deleteTaskButton) {
         if (editingTaskId === null) return;
         tasks = tasks.filter(t => t.id !== editingTaskId);
         renderAllTasks();
+        renderCalendar(currentYear, currentMonth)
         BackDisplay();
     })
 }
@@ -178,6 +180,15 @@ function renderCalendar(currentYear :number, currentMonth :number) {
             dayElement.classList.add("day");
             const date = new Date(currentYear, currentMonth, day);
             const dayOfWeek = date.getDay();
+            const month =
+            String(currentMonth + 1).padStart(2, "0");
+
+            const dateString =
+            String(day).padStart(2, "0");
+
+            const fullDate =
+            `${currentYear}-${month}-${dateString}`;
+                dayElement.dataset.date = fullDate;
 
             if (dayOfWeek === 0) {
                 dayElement.classList.add("sun");
@@ -191,10 +202,24 @@ function renderCalendar(currentYear :number, currentMonth :number) {
                 dayElement.classList.add("holiday");
             }
 
-            dayElement.textContent = String(day);
+            const dayNumber = document.createElement("div");
+            dayNumber.textContent = String(day);
+
+            dayElement.appendChild(dayNumber)
             calendar.appendChild(dayElement);
-            console.log(holiday_jp.isHoliday(date));
-            console.log(date)
+            
+            const dayTasks =
+            tasks.filter(task => task.deadline === fullDate);
+            
+            dayTasks.forEach(task => {
+
+            const taskElement =
+            document.createElement("div");
+
+            taskElement.textContent = task.title;
+
+            dayElement.appendChild(taskElement);
+            });
         }
         dateDisplay.textContent = currentYear + "年" + (currentMonth+1) + "月"
     }
