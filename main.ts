@@ -13,14 +13,16 @@ const editCancelButton = document.getElementById("edit-cancel-button");
 const deleteTaskButton = document.getElementById("delete-task-button");
 const completeTaskButton = document.getElementById("complete-task-button");
 const calendar = document.getElementById("calendar")
+const calendarDisplay = document.getElementById("calendar-display")
 const nextMonthButton = document.getElementById("next-month")
 const prevMonthButton = document.getElementById("prev-month")
 const dateDisplay = document.getElementById("date")
 
 //課題追加フォームへの遷移
-if (addButton && addTaskDisplay && displaying) { 
+if (addButton && addTaskDisplay && displaying && calendarDisplay) { 
     addButton.addEventListener('click', () => {
         displaying.style.display = "none";
+        calendarDisplay.style.display = "none"
         addTaskDisplay.style.display = "block";
 
         addTaskForm.reset();
@@ -55,7 +57,7 @@ let editingTaskId: number | null = null; //編集中のタスクIDを保持
 let tasks: Task[] = [];
 
 const renderAllTasks = () => {
-    if (!displaying || !tasklist || !editTaskDisplay || !completeTaskButton ||!endlist) return;
+    if (!displaying || !tasklist || !editTaskDisplay || !completeTaskButton ||!endlist ||!calendarDisplay) return;
 
     if (!tasklist) return;
     if (!endlist) return;
@@ -69,6 +71,7 @@ const renderAllTasks = () => {
         editButton.textContent = "編集";
         editButton.addEventListener("click", () => {
         displaying.style.display = "none";
+        calendarDisplay.style.display = "none"
         editTaskDisplay.style.display = "block";
 
             (document.getElementById("edit-title") as HTMLInputElement).value = task.title;
@@ -81,6 +84,7 @@ const renderAllTasks = () => {
         completeTaskButton.addEventListener("click", () => {
             task.completed = !task.completed;
             renderAllTasks();
+            renderCalendar(currentYear, currentMonth);
         })
         li.textContent = `${task.title} | ${task.deadline} | ${renderTaskImportance(task.importance)} | ${task.completed ? "完了" : "未完了"}`;
         li.appendChild(editButton);
@@ -106,11 +110,13 @@ const renderTaskImportance = (importance: 3 | 2 | 1): string => {
 
 //displayingへの切り替え
 function BackDisplay() {
-    if ((displaying && addTaskDisplay) && (addTaskDisplay.style.display === "block")) {
+    if ((displaying && addTaskDisplay && calendarDisplay) && (addTaskDisplay.style.display === "block")) {
         displaying.style.display = "block";
+        calendarDisplay.style.display = "block"
         addTaskDisplay.style.display = "none";
-    } else if ((displaying && editTaskDisplay) && (editTaskDisplay.style.display === "block")) {
+    } else if ((displaying && editTaskDisplay && calendarDisplay) && (editTaskDisplay.style.display === "block")) {
         displaying.style.display = "block";
+        calendarDisplay.style.display = "block"
         editTaskDisplay.style.display = "none";
     }
 }
@@ -209,7 +215,9 @@ function renderCalendar(currentYear :number, currentMonth :number) {
             calendar.appendChild(dayElement);
             
             const dayTasks =
-            tasks.filter(task => task.deadline === fullDate);
+            tasks.filter(task => task.deadline === fullDate
+                &&!task.completed
+            );
             
             dayTasks.forEach(task => {
 
