@@ -103,3 +103,26 @@ header {
     color: #990000;
     background-color: rgb(255, 209, 209);
 }
+
+.calendar-task {
+    margin-top: 4px;
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.high {
+    background-color: #ffb3b3;
+    color: red;
+}
+
+.middle {
+    background-color: #ffe0a3;
+    color: orange;
+}
+
+.low {
+    background-color: #cce5ff;
+    color: blue;
+}

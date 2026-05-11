@@ -4,8 +4,8 @@ import * as holiday_jp from "@holiday-jp/holiday_jp";
 const addTaskDisplay = document.getElementById("add-task-display");
 const addButton = document.getElementById("add-button");
 const displaying = document.getElementById("displaying");
-const tasklist = document.getElementById("task-list");  
-const endlist = document.getElementById("end-list");
+const taskList = document.getElementById("task-list");  
+const endList = document.getElementById("end-list");
 const addTaskForm = document.getElementById("add-task-form") as HTMLFormElement;
 const editTaskDisplay = document.getElementById("edit-task-display");
 const editTaskButton = document.getElementById("edit-task-button");
@@ -17,6 +17,7 @@ const calendarDisplay = document.getElementById("calendar-display")
 const nextMonthButton = document.getElementById("next-month")
 const prevMonthButton = document.getElementById("prev-month")
 const dateDisplay = document.getElementById("date")
+const container =document.getElementById("top-priority-list");
 
 //課題追加フォームへの遷移
 if (addButton && addTaskDisplay && displaying && calendarDisplay) { 
@@ -50,6 +51,7 @@ addTaskDisplay?.addEventListener('submit', (e) => {
     tasks.push(task);
     renderAllTasks();
     renderCalendar(currentYear, currentMonth);
+    renderTopPriorityTasks()
 });
 
 //タスク表示
@@ -57,13 +59,13 @@ let editingTaskId: number | null = null; //編集中のタスクIDを保持
 let tasks: Task[] = [];
 
 const renderAllTasks = () => {
-    if (!displaying || !tasklist || !editTaskDisplay || !completeTaskButton ||!endlist ||!calendarDisplay) return;
+    if (!displaying || !taskList || !editTaskDisplay || !completeTaskButton ||!endList ||!calendarDisplay) return;
 
-    if (!tasklist) return;
-    if (!endlist) return;
+    if (!taskList) return;
+    if (!endList) return;
 
-    tasklist.innerHTML = "";
-    endlist.innerHTML ="";
+    taskList.innerHTML = "";
+    endList.innerHTML ="";
     tasks.forEach(task=>{
         const li = document.createElement("li");
         const editButton = document.createElement("button");
@@ -88,10 +90,10 @@ const renderAllTasks = () => {
         })
         li.textContent = `${task.title} | ${task.deadline} | ${renderTaskImportance(task.importance)} | ${task.completed ? "完了" : "未完了"}`;
         li.appendChild(editButton);
-        if ((endlist) && (task.completed)) {
-            endlist.appendChild(li);
+        if ((endList) && (task.completed)) {
+            endList.appendChild(li);
         } else {
-            tasklist.appendChild(li);
+            taskList.appendChild(li);
         }
     })
 }
@@ -141,6 +143,7 @@ editTaskDisplay.addEventListener("submit", (e) => {
 
     renderAllTasks();
     BackDisplay();
+    renderTopPriorityTasks()
 })}
 
 //editCancelButtonのアドイベ
@@ -159,6 +162,7 @@ if (deleteTaskButton) {
         renderAllTasks();
         renderCalendar(currentYear, currentMonth)
         BackDisplay();
+        renderTopPriorityTasks()
     })
 }
 
@@ -226,6 +230,39 @@ function renderCalendar(currentYear :number, currentMonth :number) {
 
             taskElement.textContent = task.title;
 
+            taskElement.classList.add("calendar-task");
+
+            if (task.importance === 3) {
+                taskElement.classList.add("high");
+            }
+
+            if (task.importance === 2) {
+                taskElement.classList.add("middle");
+            }
+
+            if (task.importance === 1) {
+                taskElement.classList.add("low");
+            }
+
+            taskElement.addEventListener("click", () => {
+                displaying!.style.display = "none";
+                calendarDisplay!.style.display = "none";
+                editTaskDisplay!.style.display = "block";
+
+                (document.getElementById("edit-title") as HTMLInputElement).value = task.title;
+
+                (document.getElementById("edit-deadline") as HTMLInputElement).value = task.deadline;
+
+                (document.getElementById("edit-importance") as HTMLSelectElement).value =
+                String(task.importance);
+
+                 completeTaskButton!.textContent =
+                task.completed ? "未完了に戻す" : "完了";
+
+                editingTaskId = task.id;
+
+            })
+
             dayElement.appendChild(taskElement);
             });
         }
@@ -233,6 +270,7 @@ function renderCalendar(currentYear :number, currentMonth :number) {
     }
 }
 
+//月表示切り替え
 nextMonthButton?.addEventListener("click", () => {
       currentMonth++;
 
@@ -255,4 +293,53 @@ prevMonthButton?.addEventListener("click", () => {
     renderCalendar(currentYear, currentMonth);
 })
 
+//残り日数取得
+function getRemainingDays(deadline: string): number {
+    const today = new Date()
+    const dueDate = new Date(deadline)
+
+    const diff = 
+    dueDate.getTime() - today.getTime()
+
+    return Math.ceil(
+        diff / (1000 * 60 * 60 * 24)
+    )
+}
+
+//緊急度測定
+function calculateUrgency(task: Task): number {
+
+    const remainingDays =
+    getRemainingDays(task.deadline);
+
+    return task.importance / remainingDays;
+}
+
+function renderTopPriorityTasks() {
+ if (!container) return;
+
+    container.innerHTML = "";
+
+    const topTasks =
+    tasks
+    .filter(task => !task.completed)
+    .sort((a, b) =>
+        calculateUrgency(b)
+        - calculateUrgency(a)
+    )
+    .slice(0, 3);
+
+    topTasks.forEach(task => {
+
+        const div =
+        document.createElement("div");
+
+        div.textContent =
+        `${task.title}`;
+
+        container.appendChild(div);
+    });
+}
+
 renderCalendar(currentYear, currentMonth)
+renderTopPriorityTasks()
