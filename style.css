@@ -126,3 +126,30 @@ header {
     background-color: #cce5ff;
     color: blue;
 }
+
+.urgency-max {
+    background-color: #8b0000;
+    color: white;
+}
+
+.urgency-high {
+    background-color: #ff4d4d;
+    color: white;
+}
+
+.urgency-middle {
+    background-color: #ffd966;
+    color: black;
+}
+
+.urgency-low {
+    background-color: #66ccff;
+    color: black;
+}
+
+.top-priority-task {
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 8px;
+    font-weight: bold;
+}

@@ -232,6 +232,10 @@ function renderCalendar(currentYear :number, currentMonth :number) {
 
             taskElement.classList.add("calendar-task");
 
+            taskElement.classList.add(
+                getUrgencyClass(task)
+            );
+
             if (task.importance === 3) {
                 taskElement.classList.add("high");
             }
@@ -315,6 +319,7 @@ function calculateUrgency(task: Task): number {
     return task.importance / remainingDays;
 }
 
+//最重要課題表示
 function renderTopPriorityTasks() {
  if (!container) return;
 
@@ -335,11 +340,32 @@ function renderTopPriorityTasks() {
         document.createElement("div");
 
         div.textContent =
-        `${task.title}`;
+        `${task.title} ${task.deadline} ${renderTaskImportance(task.importance)}`;
+
+        div.classList.add("top-priority-task")
+        div.classList.add(getUrgencyClass(task))
 
         container.appendChild(div);
     });
 }
+
+//緊急度別にクラス付与
+function getUrgencyClass(task: Task): string {
+
+    const urgency =
+    calculateUrgency(task);
+
+    if (urgency >= 3) {
+        return "urgency-max"
+    } else if (urgency > 1) {
+        return "urgency-high";
+    } else if (urgency >= 0.5) {
+        return "urgency-middle";
+    } else {
+    return "urgency-low";
+    }
+}
+
 
 renderCalendar(currentYear, currentMonth)
 renderTopPriorityTasks()
