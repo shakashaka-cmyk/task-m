@@ -31,7 +31,7 @@ if (addButton && addTaskDisplay && displaying && calendarDisplay) {
 };
 
 //課題追加フォームの送信イベント
-addTaskDisplay?.addEventListener('submit', (e) => {
+addTaskDisplay?.addEventListener('submit', async (e) => {
     e.preventDefault();
     
     const title = (document.getElementById("title") as HTMLInputElement).value;
@@ -49,6 +49,7 @@ addTaskDisplay?.addEventListener('submit', (e) => {
     }
     BackDisplay();
     tasks.push(task);
+    await saveTasks()
     renderAllTasks();
     renderCalendar(currentYear, currentMonth);
     renderTopPriorityTasks()
@@ -83,8 +84,9 @@ const renderAllTasks = () => {
             editingTaskId = task.id;
         });
         completeTaskButton.textContent = task.completed ? "未完了に戻す" : "完了";
-        completeTaskButton.addEventListener("click", () => {
+        completeTaskButton.addEventListener("click", async () => {
             task.completed = !task.completed;
+            await saveTasks()
             renderAllTasks();
             renderCalendar(currentYear, currentMonth);
         })
@@ -125,7 +127,7 @@ function BackDisplay() {
 
 //editTaskButtonのアドイベ
 if (editTaskButton && editTaskDisplay && displaying) {      
-editTaskDisplay.addEventListener("submit", (e) => {
+editTaskDisplay.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const title = (document.getElementById("edit-title") as HTMLInputElement).value;
@@ -141,6 +143,7 @@ editTaskDisplay.addEventListener("submit", (e) => {
     task.deadline = deadline;
     task.importance = importance;
 
+    await saveTasks()
     renderAllTasks();
     BackDisplay();
     renderTopPriorityTasks()
@@ -159,6 +162,7 @@ if (deleteTaskButton) {
     deleteTaskButton.addEventListener("click", () => {
         if (editingTaskId === null) return;
         tasks = tasks.filter(t => t.id !== editingTaskId);
+        saveTasks()
         renderAllTasks();
         renderCalendar(currentYear, currentMonth)
         BackDisplay();
@@ -174,7 +178,6 @@ let currentMonth = 5
 
 //カレンダー表示関数
 function renderCalendar(currentYear :number, currentMonth :number) {
-    console.log("render")
     if (calendar && dateDisplay) {
         calendar.innerHTML =  ""
         const firstDay =
@@ -366,6 +369,44 @@ function getUrgencyClass(task: Task): string {
     }
 }
 
+async function saveTasks() {
 
-renderCalendar(currentYear, currentMonth)
-renderTopPriorityTasks()
+    await fetch(
+        "http://localhost:8080/tasks",
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type":
+                "application/json"
+            },
+
+            body: JSON.stringify(tasks)
+        }
+    );
+}
+
+async function loadTasks() {
+
+    const response =
+    await fetch(
+        "http://localhost:8080/tasks"
+    );
+
+    tasks = await response.json();
+
+    renderAllTasks();
+
+    renderCalendar(
+        currentYear,
+        currentMonth
+    );
+
+    renderTopPriorityTasks();
+}
+
+async function init() {
+    await loadTasks();
+}
+
+init();
