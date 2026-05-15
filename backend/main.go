@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -90,5 +91,13 @@ func main() {
 		}
 	})
 
-	http.ListenAndServe(":8080", nil)
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		port = "8080"
+	}
+
+	fmt.Println("server start:", port)
+
+	http.ListenAndServe(":"+port, nil)
 }
