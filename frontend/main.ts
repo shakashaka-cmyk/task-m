@@ -390,7 +390,7 @@ async function loadTasks() {
 
     const response =
     await fetch(
-        "http://localhost:8080/tasks"
+        "https://xxxxx.onrender.com/tasks"
     );
 
     tasks = await response.json();
