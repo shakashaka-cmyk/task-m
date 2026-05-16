@@ -80,7 +80,17 @@ func main() {
 
 	fs := http.FileServer(http.Dir("/home/ubuntu/task-m/frontend/dist"))
 
-	mux.Handle("/", fs)
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+
+		path := "/home/ubuntu/task-m/frontend/dist" + r.URL.Path
+
+		if _, err := os.Stat(path); os.IsNotExist(err) {
+			http.ServeFile(w, r, "/home/ubuntu/task-m/frontend/dist/index.html")
+			return
+		}
+
+		fs.ServeHTTP(w, r)
+	})
 
 	fmt.Println("server start:", port)
 
