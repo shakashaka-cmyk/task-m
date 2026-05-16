@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskMan</title>
+  <script type="module" crossorigin src="/assets/index-C7DLbXM4.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-Mh4OZlm6.css">
+</head>
+
+<body>
+<header>
+    <h1 class="header-text">TaskMan</h1>
+</header>
+
+<div id="calendar-display">
+    <div id="calendar-text-display">
+        <button id="prev-month">←</button>
+        <button id="next-month">→</button>
+        <div id="date"></div>
+    </div>
+    <div id="calendar-header">
+        <div class="sun">日</div>
+        <div>月</div>
+        <div>火</div>
+        <div>水</div>
+        <div>木</div>
+        <div>金</div>
+        <div class="sat">土</div>
+    </div>
+    <div id="calendar"></div>
+</div>
+
+<div id="displaying">
+    <div id="top-priority-display">
+        <h2>最優先タスク</h2>
+
+        <div id="top-priority-list"></div>
+    </div>
+    <h2>課題一覧</h2>
+    <ul id="task-list">
+    </ul>
+    <div>
+        <button id="add-button" type="button">課題を追加</button>
+    </div>
+
+    <h2>達成済課題</h2>
+    <ul id="end-list"> 
+    </ul>
+</div>
+
+<div id="add-task-display">
+    <div id="add-task-text">
+        <p class="assignment-p">|課題名</p>
+        <p class="deadline-p">|締め切り</p>
+        <p class="importance-p">|優先度</p>
+    </div>
+    <form id="add-task-form">
+        <input type="text" id="title" placeholder="タイトル">
+        <input type="date" id="deadline" placeholder="締め切り">
+
+        <select id="importance">
+            <option value="3">高</option>
+            <option value="2">中</option>
+            <option value="1">低</option>
+        </select>
+        <button type="submit" id="add-task-button">追加</button>
+    </form>
+</div>
+
+<div id="edit-task-display">
+    <div id="edit-task-text">
+        <p class="assignment-p">|課題名</p>
+        <p class="deadline-p">|締め切り</p>
+        <p class="importance-p">|優先度</p>
+    </div>
+        
+     <form id="edit-task-form">
+        <input type="text" id="edit-title" placeholder="タイトル">
+        <input type="date" id="edit-deadline" placeholder="締め切り">
+
+        <select id="edit-importance">
+            <option value="3">高</option>
+            <option value="2">中</option>
+            <option value="1">低</option>
+        </select>
+        <button type="submit" id="edit-task-button">編集を確定</button>
+        <button type="button" id="edit-cancel-button">キャンセル</button>
+        <button type="button" id="delete-task-button">削除</button>
+        <button type="button" id="complete-task-button">完了</button>
+    </form>
+</div>
+
+</body>
+</html>
