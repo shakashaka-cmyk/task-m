@@ -73,7 +73,7 @@ func main() {
 	})
 
 	fs := http.FileServer(
-		http.Dir("../frontend/dist"),
+		http.Dir("/home/ubuntu/task-m/frontend/dist"),
 	)
 
 	http.Handle("/", fs)
