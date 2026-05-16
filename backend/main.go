@@ -58,8 +58,14 @@ func saveTasks(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
 
-	http.HandleFunc("/tasks", func(w http.ResponseWriter, r *http.Request) {
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("/tasks", func(w http.ResponseWriter, r *http.Request) {
 
 		if r.Method == "GET" {
 			getTasks(w, r)
@@ -72,19 +78,14 @@ func main() {
 		}
 	})
 
-	fs := http.FileServer(
-		http.Dir("/home/ubuntu/task-m/frontend/dist"),
-	)
+	fs := http.FileServer(http.Dir("/home/ubuntu/task-m/frontend/dist"))
 
-	http.Handle("/", fs)
-
-	port := os.Getenv("PORT")
-
-	if port == "" {
-		port = "8080"
-	}
+	mux.Handle("/", fs)
 
 	fmt.Println("server start:", port)
 
-	http.ListenAndServe(":"+port, nil)
+	err := http.ListenAndServe(":"+port, mux)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
