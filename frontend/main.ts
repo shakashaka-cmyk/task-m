@@ -372,7 +372,7 @@ function getUrgencyClass(task: Task): string {
 async function saveTasks() {
 
     await fetch(
-      "/tasks",
+      "http://3.106.199.1:8080",
         {
             method: "POST",
 
@@ -390,7 +390,7 @@ async function loadTasks() {
 
     const response =
     await fetch(
-        "/tasks"
+        "http://3.106.199.1:8080"
     );
 
     tasks = await response.json();
