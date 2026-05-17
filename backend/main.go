@@ -1,24 +1,53 @@
 package main
 
 import (
+	"database/sql"
+	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func getTasks(w http.ResponseWriter, _ *http.Request) {
 
-	w.Header().Set(
-		"Access-Control-Allow-Origin",
-		"*",
-	)
-
-	file, err := os.ReadFile("tasks.json")
+	rows, err := db.Query(`
+		SELECT id, title, completed
+		FROM tasks
+	`)
 
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
+	}
+
+	defer rows.Close()
+
+	type Task struct {
+		ID        int    `json:"id"`
+		Title     string `json:"title"`
+		Completed bool   `json:"completed"`
+	}
+
+	var tasks []Task
+
+	for rows.Next() {
+
+		var task Task
+
+		err := rows.Scan(
+			&task.ID,
+			&task.Title,
+			&task.Completed,
+		)
+
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+
+		tasks = append(tasks, task)
 	}
 
 	w.Header().Set(
@@ -26,7 +55,8 @@ func getTasks(w http.ResponseWriter, _ *http.Request) {
 		"application/json",
 	)
 
-	w.Write(file)
+	json.NewEncoder(w).Encode(tasks)
+
 }
 
 func saveTasks(w http.ResponseWriter, r *http.Request) {
@@ -36,28 +66,56 @@ func saveTasks(w http.ResponseWriter, r *http.Request) {
 		"*",
 	)
 
-	body, err := io.ReadAll(r.Body)
+	type Task struct {
+		Title string `json:"title"`
+	}
+
+	var task Task
+
+	err := json.NewDecoder(r.Body).Decode(&task)
 
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	err = os.WriteFile(
-		"tasks.json",
-		body,
-		0644,
+	_, err = db.Exec(`
+		INSERT INTO tasks (title, completed)
+		VALUES (?, ?)
+	`,
+		task.Title,
+		false,
 	)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
 
 	w.Write([]byte("saved"))
 }
 
+var db *sql.DB
+
 func main() {
+	var err error
+
+	db, err = sql.Open(
+		"sqlite3",
+		"./app.db",
+	)
+
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = db.Exec(`
+	CREATE TABLE IF NOT EXISTS tasks (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		title TEXT,
+		completed BOOLEAN
+	)
+	`)
+
+	if err != nil {
+		panic(err)
+	}
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
@@ -94,7 +152,7 @@ func main() {
 
 	fmt.Println("server start:", port)
 
-	err := http.ListenAndServe(":"+port, mux)
+	err = http.ListenAndServe(":"+port, mux)
 	if err != nil {
 		fmt.Println(err)
 	}
