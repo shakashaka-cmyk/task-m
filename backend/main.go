@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
+	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -90,6 +92,65 @@ func saveTasks(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("saved"))
 }
 
+func deleteTask(w http.ResponseWriter, r *http.Request) {
+	path := r.URL.Path
+	parts := strings.Split(path, "/")
+	id, err := strconv.Atoi(parts[2])
+
+	_, err = db.Exec(`
+		DELETE FROM tasks
+		WHERE id = ?
+    `,
+		id,
+	)
+
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	w.Write([]byte("deleted"))
+}
+
+func updateTask(w http.ResponseWriter, r *http.Request) {
+
+	path := r.URL.Path
+	parts := strings.Split(path, "/")
+	id, err := strconv.Atoi(parts[2])
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	type Task struct {
+		Completed bool `json:"completed"`
+	}
+
+	var task Task
+
+	err = json.NewDecoder(r.Body).Decode(&task)
+
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	_, err = db.Exec(`
+		UPDATE tasks
+		Set completed = ?
+		WHERE id = ?
+    `,
+		task.Completed,
+		id,
+	)
+
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	w.Write([]byte("updated"))
+}
+
 var db *sql.DB
 
 func main() {
@@ -132,6 +193,14 @@ func main() {
 
 		if r.Method == "POST" {
 			saveTasks(w, r)
+			return
+		}
+	})
+
+	mux.HandleFunc("/tasks/", func(w http.ResponseWriter, r *http.Request) {
+
+		if r.Method == "DELETE" {
+			deleteTask(w, r)
 			return
 		}
 	})

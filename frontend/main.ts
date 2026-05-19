@@ -159,14 +159,14 @@ if (editCancelButton) {
 
 //deleteTaskButtonのアドイベ
 if (deleteTaskButton) {
-    deleteTaskButton.addEventListener("click", () => {
+    deleteTaskButton.addEventListener("click", async () => {
         if (editingTaskId === null) return;
-        tasks = tasks.filter(t => t.id !== editingTaskId);
-        saveTasks()
+        await deleteTask(editingTaskId);
+        await loadTasks();
         renderAllTasks();
-        renderCalendar(currentYear, currentMonth)
+        renderCalendar(currentYear, currentMonth);
         BackDisplay();
-        renderTopPriorityTasks()
+        renderTopPriorityTasks();
     })
 }
 
@@ -404,9 +404,38 @@ async function loadTasks() {
 
     renderTopPriorityTasks();
 }
+async function deleteTask(id:number) {
+
+    await fetch(
+        "http://3.106.199.1:8080/tasks/" + id,
+        {
+			method: "DELETE",
+		}
+    )
+    await loadTasks()
+}
+
+async function updateTask( id: number, completed: boolean) {
+    await fetch(
+        "http://3.106.199.1:8080/tasks/" + id,
+        {
+            method: "PUT",
+
+            headers: {
+			"Content-Type": "application/json"
+		},
+
+		body: JSON.stringify({
+			completed: completed
+        })
+    }
+)}
+
+
 
 async function init() {
     await loadTasks();
 }
 
 init();
+
