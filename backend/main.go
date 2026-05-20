@@ -122,7 +122,10 @@ func updateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	type Task struct {
-		Completed bool `json:"completed"`
+		Title      string `json:"title"`
+		Deadline   string `json:"deadline"`
+		Importance int    `json:"importance"`
+		Completed  bool   `json:"completed"`
 	}
 
 	var task Task
@@ -136,9 +139,12 @@ func updateTask(w http.ResponseWriter, r *http.Request) {
 
 	_, err = db.Exec(`
 		UPDATE tasks
-		Set completed = ?
+		Set title = ?, deadline = ?, importance = ?, completed = ?
 		WHERE id = ?
     `,
+		task.Title,
+		task.Deadline,
+		task.Importance,
 		task.Completed,
 		id,
 	)

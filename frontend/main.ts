@@ -48,8 +48,9 @@ addTaskDisplay?.addEventListener('submit', async (e) => {
     completed: false
     }
     BackDisplay();
-    tasks.push(task);
-    await saveTasks()
+    await createTask(task);   // ← DBに1件追加
+    await getTasks();         // ← DBから最新を取り直す
+
     renderAllTasks();
     renderCalendar(currentYear, currentMonth);
     renderTopPriorityTasks()
@@ -82,22 +83,25 @@ const renderAllTasks = () => {
             (document.getElementById("edit-importance") as HTMLSelectElement).value = String(task.importance);
             (document.getElementById("complete-task-button") as HTMLButtonElement).textContent = task.completed ? "未完了に戻す" : "完了";
             editingTaskId = task.id;
+            completeTaskButton.textContent = task.completed ? "未完了に戻す" : "完了";
         });
-        completeTaskButton.textContent = task.completed ? "未完了に戻す" : "完了";
-        completeTaskButton.addEventListener("click", async () => {
-            task.completed = !task.completed;
-            await saveTasks()
-            renderAllTasks();
-            renderCalendar(currentYear, currentMonth);
-        })
-        li.textContent = `${task.title} | ${task.deadline} | ${renderTaskImportance(task.importance)} | ${task.completed ? "完了" : "未完了"}`;
-        li.appendChild(editButton);
-        if ((endList) && (task.completed)) {
-            endList.appendChild(li);
-        } else {
-            taskList.appendChild(li);
-        }
     })
+
+    completeTaskButton.addEventListener("click", async () => {
+        const task = tasks.find(t => t.id === editingTaskId);
+
+        if (!task) return;
+
+        await updateTask(
+            task.id,
+            task.title,
+            task.deadline,
+            task.importance,
+            !task.completed
+        );
+
+        await getTasks();
+    });
 }
 
 //タスクの重要性表示
@@ -139,11 +143,16 @@ editTaskDisplay.addEventListener("submit", async (e) => {
     const task = tasks.find(t => t.id === editingTaskId)
     if (!task) return;
 
-    task.title = title;
-    task.deadline = deadline;
-    task.importance = importance;
+    await updateTask(
+        task.id,
+        title,
+        deadline,
+        importance,
+        task.completed
+    );
 
-    await saveTasks()
+    await getTasks()
+
     renderAllTasks();
     BackDisplay();
     renderTopPriorityTasks()
@@ -162,7 +171,7 @@ if (deleteTaskButton) {
     deleteTaskButton.addEventListener("click", async () => {
         if (editingTaskId === null) return;
         await deleteTask(editingTaskId);
-        await loadTasks();
+        await getTasks();
         renderAllTasks();
         renderCalendar(currentYear, currentMonth);
         BackDisplay();
@@ -369,24 +378,7 @@ function getUrgencyClass(task: Task): string {
     }
 }
 
-async function saveTasks() {
-
-    await fetch(
-      "http://3.106.199.1:8080",
-        {
-            method: "POST",
-
-            headers: {
-                "Content-Type":
-                "application/json"
-            },
-
-            body: JSON.stringify(tasks)
-        }
-    );
-}
-
-async function loadTasks() {
+async function getTasks() {
 
     const response =
     await fetch(
@@ -404,6 +396,7 @@ async function loadTasks() {
 
     renderTopPriorityTasks();
 }
+
 async function deleteTask(id:number) {
 
     await fetch(
@@ -412,10 +405,11 @@ async function deleteTask(id:number) {
 			method: "DELETE",
 		}
     )
-    await loadTasks()
+    await getTasks()
 }
 
-async function updateTask( id: number, completed: boolean) {
+async function updateTask( id: number, title: string,
+    deadline: string, importance: 1 | 2 | 3, completed: boolean) {
     await fetch(
         "http://3.106.199.1:8080/tasks/" + id,
         {
@@ -426,15 +420,29 @@ async function updateTask( id: number, completed: boolean) {
 		},
 
 		body: JSON.stringify({
-			completed: completed
+            title,
+            deadline,
+            importance,
+			completed
         })
     }
 )}
 
-
+async function createTask(task: Omit<Task, "id">) {
+    await fetch(
+        "http://3.106.199.1:8080/tasks",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(task)
+        }
+    );
+}
 
 async function init() {
-    await loadTasks();
+    await getTasks();
 }
 
 init();
