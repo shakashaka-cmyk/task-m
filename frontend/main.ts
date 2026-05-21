@@ -72,6 +72,14 @@ const renderAllTasks = () => {
         const li = document.createElement("li");
         const editButton = document.createElement("button");
         //編集ボタンのUI・機能作成
+        li.textContent = `${task.title} ${task.deadline} ${renderTaskImportance(task.importance)}`;
+        li.appendChild(editButton);
+        if (task.completed) {
+            endList.appendChild(li);
+        } else {
+            taskList.appendChild(li);
+        }
+
         editButton.textContent = "編集";
         editButton.addEventListener("click", () => {
         displaying.style.display = "none";
@@ -86,8 +94,9 @@ const renderAllTasks = () => {
             completeTaskButton.textContent = task.completed ? "未完了に戻す" : "完了";
         });
     })
+}
 
-    completeTaskButton.addEventListener("click", async () => {
+if (completeTaskButton) {completeTaskButton.addEventListener("click", async () => {
         const task = tasks.find(t => t.id === editingTaskId);
 
         if (!task) return;
@@ -172,10 +181,7 @@ if (deleteTaskButton) {
         if (editingTaskId === null) return;
         await deleteTask(editingTaskId);
         await getTasks();
-        renderAllTasks();
-        renderCalendar(currentYear, currentMonth);
         BackDisplay();
-        renderTopPriorityTasks();
     })
 }
 
@@ -328,7 +334,11 @@ function calculateUrgency(task: Task): number {
     const remainingDays =
     getRemainingDays(task.deadline);
 
-    return task.importance / remainingDays;
+    if  (remainingDays <= 0) {
+        return task.importance * 10
+    } else {
+        return task.importance / remainingDays;
+    }
 }
 
 //最重要課題表示
@@ -428,7 +438,9 @@ async function updateTask( id: number, title: string,
     }
 )}
 
-async function createTask(task: Omit<Task, "id">) {
+type NewTask = Omit<Task, "id">;
+
+async function createTask(task: Omit<NewTask, "id">) :Promise<void> {
     await fetch(
         "http://3.106.199.1:8080/tasks",
         {
