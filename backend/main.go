@@ -15,7 +15,7 @@ import (
 func getTasks(w http.ResponseWriter, _ *http.Request) {
 
 	rows, err := db.Query(`
-		SELECT id, title, completed
+		SELECT id, title, deadline, importance, completed
 		FROM tasks
 	`)
 
@@ -27,9 +27,11 @@ func getTasks(w http.ResponseWriter, _ *http.Request) {
 	defer rows.Close()
 
 	type Task struct {
-		ID        int    `json:"id"`
-		Title     string `json:"title"`
-		Completed bool   `json:"completed"`
+		ID         int    `json:"id"`
+		Title      string `json:"title"`
+		Deadline   string `json:"deadline"`
+		Importance int    `json:"importance"`
+		Completed  bool   `json:"completed"`
 	}
 
 	var tasks []Task
@@ -41,6 +43,8 @@ func getTasks(w http.ResponseWriter, _ *http.Request) {
 		err := rows.Scan(
 			&task.ID,
 			&task.Title,
+			&task.Deadline,
+			&task.Importance,
 			&task.Completed,
 		)
 
@@ -57,11 +61,14 @@ func getTasks(w http.ResponseWriter, _ *http.Request) {
 		"application/json",
 	)
 
-	json.NewEncoder(w).Encode(tasks)
-
+	err = json.NewEncoder(w).Encode(tasks)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
 }
 
-func saveTasks(w http.ResponseWriter, r *http.Request) {
+func createTask(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set(
 		"Access-Control-Allow-Origin",
@@ -69,7 +76,10 @@ func saveTasks(w http.ResponseWriter, r *http.Request) {
 	)
 
 	type Task struct {
-		Title string `json:"title"`
+		Title      string `json:"title"`
+		Deadline   string `json:"deadline"`
+		Importance int    `json:"importance"`
+		Completed  bool   `json:"completed"`
 	}
 
 	var task Task
@@ -82,12 +92,19 @@ func saveTasks(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err = db.Exec(`
-		INSERT INTO tasks (title, completed)
-		VALUES (?, ?)
+		INSERT INTO tasks (title, deadline, importance, completed)
+		VALUES (?, ?, ?, ?)
 	`,
 		task.Title,
-		false,
+		task.Deadline,
+		task.Importance,
+		task.Completed,
 	)
+
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
 
 	w.Write([]byte("saved"))
 }
@@ -96,6 +113,10 @@ func deleteTask(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
 	parts := strings.Split(path, "/")
 	id, err := strconv.Atoi(parts[2])
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
+	}
 
 	_, err = db.Exec(`
 		DELETE FROM tasks
@@ -198,7 +219,7 @@ func main() {
 		}
 
 		if r.Method == "POST" {
-			saveTasks(w, r)
+			createTask(w, r)
 			return
 		}
 	})

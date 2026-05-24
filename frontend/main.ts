@@ -102,11 +102,7 @@ if (completeTaskButton) {completeTaskButton.addEventListener("click", async () =
         if (!task) return;
 
         await updateTask(
-            task.id,
-            task.title,
-            task.deadline,
-            task.importance,
-            !task.completed
+            task
         );
 
         await getTasks();
@@ -152,13 +148,7 @@ editTaskDisplay.addEventListener("submit", async (e) => {
     const task = tasks.find(t => t.id === editingTaskId)
     if (!task) return;
 
-    await updateTask(
-        task.id,
-        title,
-        deadline,
-        importance,
-        task.completed
-    );
+    await updateTask(task);
 
     await getTasks()
 
@@ -392,10 +382,15 @@ async function getTasks() {
 
     const response =
     await fetch(
-        "http://3.106.199.1:8080"
+        "http://3.106.199.1:8080/tasks"
     );
 
-    tasks = await response.json();
+    if (!response.ok) {
+        throw new Error("タスク取得失敗");
+    }
+
+    const data: Task[] = await response.json();
+    tasks = data;
 
     renderAllTasks();
 
@@ -407,21 +402,20 @@ async function getTasks() {
     renderTopPriorityTasks();
 }
 
-async function deleteTask(id:number) {
-
-    await fetch(
+async function deleteTask(id: number) {
+    const response = await fetch(
         "http://3.106.199.1:8080/tasks/" + id,
-        {
-			method: "DELETE",
-		}
+        { method: "DELETE"}
     )
-    await getTasks()
+    if (!response.ok) {
+        throw new Error("削除失敗");
+    }
+    await getTasks();
 }
 
-async function updateTask( id: number, title: string,
-    deadline: string, importance: 1 | 2 | 3, completed: boolean) {
-    await fetch(
-        "http://3.106.199.1:8080/tasks/" + id,
+async function updateTask(task: Task) {
+    const response = await fetch(
+        "http://3.106.199.1:8080/tasks/" + task.id,
         {
             method: "PUT",
 
@@ -429,19 +423,18 @@ async function updateTask( id: number, title: string,
 			"Content-Type": "application/json"
 		},
 
-		body: JSON.stringify({
-            title,
-            deadline,
-            importance,
-			completed
-        })
+		body: JSON.stringify(task)
+    })
+    if (!response.ok) {
+        throw new Error("更新失敗");
     }
-)}
+    await getTasks();
+}
 
 type NewTask = Omit<Task, "id">;
 
-async function createTask(task: Omit<NewTask, "id">) :Promise<void> {
-    await fetch(
+async function createTask(task: NewTask) {
+    const response = await fetch(
         "http://3.106.199.1:8080/tasks",
         {
             method: "POST",
@@ -451,6 +444,10 @@ async function createTask(task: Omit<NewTask, "id">) :Promise<void> {
             body: JSON.stringify(task)
         }
     );
+    if (!response.ok) {
+        throw new Error("作成失敗");
+    }
+    await getTasks();
 }
 
 async function init() {
