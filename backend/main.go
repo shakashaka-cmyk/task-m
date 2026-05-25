@@ -56,6 +56,11 @@ func getTasks(w http.ResponseWriter, _ *http.Request) {
 		tasks = append(tasks, task)
 	}
 
+	if err := rows.Err(); err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
 	w.Header().Set(
 		"Content-Type",
 		"application/json",
@@ -139,7 +144,7 @@ func updateTask(w http.ResponseWriter, r *http.Request) {
 	parts := strings.Split(path, "/")
 	id, err := strconv.Atoi(parts[2])
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), 400)
 		return
 	}
 	type Task struct {
@@ -194,8 +199,10 @@ func main() {
 
 	_, err = db.Exec(`
 	CREATE TABLE IF NOT EXISTS tasks (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		id INTEGER PRIMARY KEY AUTOINCREMENT ,
 		title TEXT,
+		deadline TEXT,
+		importance INTEGER
 		completed BOOLEAN
 	)
 	`)
@@ -228,6 +235,11 @@ func main() {
 
 		if r.Method == "DELETE" {
 			deleteTask(w, r)
+			return
+		}
+
+		if r.Method == "PUT" {
+			updateTask(w, r)
 			return
 		}
 	})

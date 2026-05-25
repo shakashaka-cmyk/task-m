@@ -17,7 +17,7 @@ const calendarDisplay = document.getElementById("calendar-display")
 const nextMonthButton = document.getElementById("next-month")
 const prevMonthButton = document.getElementById("prev-month")
 const dateDisplay = document.getElementById("date")
-const container =document.getElementById("top-priority-list");
+const container = document.getElementById("top-priority-list");
 
 //課題追加フォームへの遷移
 if (addButton && addTaskDisplay && displaying && calendarDisplay) { 
@@ -40,8 +40,7 @@ addTaskDisplay?.addEventListener('submit', async (e) => {
     (document.getElementById("importance") as HTMLSelectElement).value
   );
 
-  const task: Task = {          
-    id: Date.now(),
+  const task: NewTask = {          
     title,
     deadline,
     importance: importance as 3 | 2 | 1,
@@ -49,11 +48,6 @@ addTaskDisplay?.addEventListener('submit', async (e) => {
     }
     BackDisplay();
     await createTask(task);   // ← DBに1件追加
-    await getTasks();         // ← DBから最新を取り直す
-
-    renderAllTasks();
-    renderCalendar(currentYear, currentMonth);
-    renderTopPriorityTasks()
 });
 
 //タスク表示
@@ -101,11 +95,10 @@ if (completeTaskButton) {completeTaskButton.addEventListener("click", async () =
 
         if (!task) return;
 
-        await updateTask(
-            task
-        );
-
-        await getTasks();
+        await updateTask({
+            ...task, 
+            completed: !task.completed
+        });
     });
 }
 
@@ -148,13 +141,12 @@ editTaskDisplay.addEventListener("submit", async (e) => {
     const task = tasks.find(t => t.id === editingTaskId)
     if (!task) return;
 
-    await updateTask(task);
-
-    await getTasks()
-
-    renderAllTasks();
-    BackDisplay();
-    renderTopPriorityTasks()
+    await updateTask({
+        ...task,
+        title,
+        deadline,
+        importance
+    });
 })}
 
 //editCancelButtonのアドイベ
@@ -170,8 +162,6 @@ if (deleteTaskButton) {
     deleteTaskButton.addEventListener("click", async () => {
         if (editingTaskId === null) return;
         await deleteTask(editingTaskId);
-        await getTasks();
-        BackDisplay();
     })
 }
 
