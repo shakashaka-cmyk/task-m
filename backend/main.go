@@ -202,7 +202,7 @@ func main() {
 		id INTEGER PRIMARY KEY AUTOINCREMENT ,
 		title TEXT,
 		deadline TEXT,
-		importance INTEGER
+		importance INTEGER,
 		completed BOOLEAN
 	)
 	`)
@@ -217,6 +217,16 @@ func main() {
 	}
 
 	mux := http.NewServeMux()
+
+	mux.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
+
+		if r.Method == "POST" {
+			registerUser(w, r)
+			return
+		}
+
+		http.Error(w, "Method Not Allowed", 405)
+	})
 
 	mux.HandleFunc("/tasks", func(w http.ResponseWriter, r *http.Request) {
 
