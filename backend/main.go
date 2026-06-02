@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func getTasks(w http.ResponseWriter, _ *http.Request) {
@@ -183,6 +184,52 @@ func updateTask(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("updated"))
 }
 
+func registerUser(w http.ResponseWriter, r *http.Request) {
+
+	type RegisterRequest struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+
+	var req RegisterRequest
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
+	}
+
+	hash, err := bcrypt.GenerateFromPassword(
+		[]byte(req.Password),
+		bcrypt.DefaultCost,
+	)
+
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	_, err = db.Exec(`
+		CREATE TABLE IF NOT EXISTS users (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		username TEXT NOT NULL UNIQUE,
+		password_hash TEXT NOT NULL
+	)
+		)
+		VALUES(?, ?)
+`,
+		req.Username,
+		string(hash),
+	)
+
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	w.Write([]byte("registered"))
+}
+
 var db *sql.DB
 
 func main() {
@@ -205,6 +252,18 @@ func main() {
 		importance INTEGER,
 		completed BOOLEAN
 	)
+	`)
+
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = db.Exec(`
+		CREATE TABLE IF NOT EXISTS users (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			username TEXT NOT NULL UNIQUE,
+			password TEXT NOT NULL
+		)
 	`)
 
 	if err != nil {
