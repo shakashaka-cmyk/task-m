@@ -210,11 +210,9 @@ func registerUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err = db.Exec(`
-		CREATE TABLE IF NOT EXISTS users (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		username TEXT NOT NULL UNIQUE,
-		password_hash TEXT NOT NULL
-	)
+		INSERT INTO users (
+			username,
+			password_hash
 		)
 		VALUES(?, ?)
 `,
@@ -262,7 +260,7 @@ func main() {
 		CREATE TABLE IF NOT EXISTS users (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			username TEXT NOT NULL UNIQUE,
-			password TEXT NOT NULL
+			password_hash TEXT NOT NULL
 		)
 	`)
 
