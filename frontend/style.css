@@ -153,3 +153,7 @@ header {
     border-radius: 8px;
     font-weight: bold;
 }
+
+#login-display {
+    display: none;
+}

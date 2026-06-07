@@ -10,15 +10,25 @@ import (
 	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func getTasks(w http.ResponseWriter, _ *http.Request) {
+func getTasks(w http.ResponseWriter, r *http.Request) {
+
+		userID, err := getUserID(r)
+
+	if err != nil {
+		http.Error(w, "unauthorized", 401)
+		return
+	}
 
 	rows, err := db.Query(`
 		SELECT id, title, deadline, importance, completed
 		FROM tasks
-	`)
+		WHERE user_id = ?
+	`,
+		userID,)
 
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -81,6 +91,14 @@ func createTask(w http.ResponseWriter, r *http.Request) {
 		"*",
 	)
 
+
+	userID, err := getUserID(r)
+
+	if err != nil {
+		http.Error(w, "unauthorized", 401)
+		return
+	}
+
 	type Task struct {
 		Title      string `json:"title"`
 		Deadline   string `json:"deadline"`
@@ -90,7 +108,7 @@ func createTask(w http.ResponseWriter, r *http.Request) {
 
 	var task Task
 
-	err := json.NewDecoder(r.Body).Decode(&task)
+	err = json.NewDecoder(r.Body).Decode(&task)
 
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -98,13 +116,14 @@ func createTask(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err = db.Exec(`
-		INSERT INTO tasks (title, deadline, importance, completed)
-		VALUES (?, ?, ?, ?)
+		INSERT INTO tasks (title, deadline, importance, completed, user_id)
+		VALUES (?, ?, ?, ?, ?)
 	`,
 		task.Title,
 		task.Deadline,
 		task.Importance,
 		task.Completed,
+		userID,
 	)
 
 	if err != nil {
@@ -124,11 +143,19 @@ func deleteTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	userID, err := getUserID(r)
+	if err != nil {
+		http.Error(w, "unauthorized", 401)
+		return
+	}
+
 	_, err = db.Exec(`
 		DELETE FROM tasks
 		WHERE id = ?
+		AND user_id = ?
     `,
 		id,
+		user_id,
 	)
 
 	if err != nil {
@@ -155,6 +182,11 @@ func updateTask(w http.ResponseWriter, r *http.Request) {
 		Completed  bool   `json:"completed"`
 	}
 
+	userID, err := getUserID(r)
+	if err != nil {
+		http.Error(w, "unauthorized", 401)
+		return
+	}
 	var task Task
 
 	err = json.NewDecoder(r.Body).Decode(&task)
@@ -168,12 +200,14 @@ func updateTask(w http.ResponseWriter, r *http.Request) {
 		UPDATE tasks
 		Set title = ?, deadline = ?, importance = ?, completed = ?
 		WHERE id = ?
+		AND user_id = ?
     `,
 		task.Title,
 		task.Deadline,
 		task.Importance,
 		task.Completed,
 		id,
+		user_id,
 	)
 
 	if err != nil {
@@ -228,7 +262,100 @@ func registerUser(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("registered"))
 }
 
+func  getUserID(r *http.Request) (int, error) {
+	authHeader := r.Header.Get("Authorization")
+
+	tokenString := strings.TrimPrefix(
+		authHeader,
+		"Bearer ",
+	)
+
+	token, err := jwt.Parse(
+		tokenString,
+		func(token *jwt.Token) (interface{}, error) {
+			return []byte(jwtSecret), nil
+		},
+	)
+
+	if err != nil {
+		return 0, err
+	}
+
+	claims := token.Claims.(jwt.MapClaims)
+
+	userID := int(
+		claims["user_id"].(float64),
+	)
+
+	return userID, nil
+}
+
+func loginUser(w http.ResponseWriter, r *http.Request) {
+	type LoginRequest struct {
+		Username string `json:"username"`
+        Password string `json:"password"`
+	}
+
+	var req LoginRequest
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+        http.Error(w, err.Error(), 400)
+        return
+    }
+
+	var userID int 
+	var passwordHash string
+
+	err = db.QueryRow(`
+        SELECT id, password_hash
+        FROM users
+        WHERE username = ?
+    `,
+        req.Username,
+    ).Scan(
+        &userID,
+        &passwordHash,
+    )
+
+	if err != nil {
+        http.Error(w, "invalid username", 401)
+        return
+    }
+
+	 err = bcrypt.CompareHashAndPassword(
+        []byte(passwordHash),
+        []byte(req.Password),
+    )
+
+    if err != nil {
+        http.Error(w, "invalid password", 401)
+        return
+    }
+
+	token := jwt.NewWithClaims(
+	jwt.SigningMethodHS256,
+	jwt.MapClaims{
+		"user_id": userID,
+	},
+)
+
+	tokenString, err := token.SignedString(
+		[]byte(jwtSecret),
+	)
+
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	json.NewEncoder(w).Encode(map[string]string{
+		"token": tokenString,
+	})
+}
+
 var db *sql.DB
+const jwtSecret = "super-secret-key"
 
 func main() {
 	var err error
@@ -244,11 +371,12 @@ func main() {
 
 	_, err = db.Exec(`
 	CREATE TABLE IF NOT EXISTS tasks (
-		id INTEGER PRIMARY KEY AUTOINCREMENT ,
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		title TEXT,
 		deadline TEXT,
 		importance INTEGER,
-		completed BOOLEAN
+		completed BOOLEAN,
+		user_id INTEGER
 	)
 	`)
 
@@ -279,6 +407,16 @@ func main() {
 
 		if r.Method == "POST" {
 			registerUser(w, r)
+			return
+		}
+
+		http.Error(w, "Method Not Allowed", 405)
+	})
+
+	mux.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
+
+    if r.Method == "POST" {
+			loginUser(w, r)
 			return
 		}
 
