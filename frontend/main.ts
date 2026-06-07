@@ -17,7 +17,10 @@ const calendarDisplay = document.getElementById("calendar-display")
 const nextMonthButton = document.getElementById("next-month")
 const prevMonthButton = document.getElementById("prev-month")
 const dateDisplay = document.getElementById("date")
-const container = document.getElementById("top-priority-list");
+const appDisplay = document.getElementById("app-display")
+const container = document.getElementById("top-priority-list")
+const loginDisplay = document.getElementById("login-display");
+const loginForm = document.getElementById("login-form") as HTMLFormElement;
 
 //課題追加フォームへの遷移
 if (addButton && addTaskDisplay && displaying && calendarDisplay) { 
@@ -295,6 +298,43 @@ prevMonthButton?.addEventListener("click", () => {
     renderCalendar(currentYear, currentMonth);
 })
 
+//ログインフォーム  
+loginForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const username =
+        (document.getElementById("login-username") as HTMLInputElement).value;
+
+    const password =
+        (document.getElementById("login-password") as HTMLInputElement).value;
+
+    const response = await fetch(
+        "http://3.106.199.1:8080/login",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                username,
+                password
+            })
+        }
+    );
+
+    if (!response.ok) {
+        alert("ログイン失敗");
+        return;
+    }
+
+    const data = await response.json();
+
+    localStorage.setItem("token", data.token);
+
+    renderAuthState();
+    await getTasks();
+});
+
 //残り日数取得
 function getRemainingDays(deadline: string): number {
     const today = new Date()
@@ -371,9 +411,11 @@ function getUrgencyClass(task: Task): string {
 async function getTasks() {
 
     const response =
-    await fetch(
-        "http://3.106.199.1:8080/tasks"
-    );
+    await fetch("http://3.106.199.1:8080/tasks", {
+    headers: {
+        "Authorization": "Bearer " + getToken()
+    }
+})
 
     if (!response.ok) {
         throw new Error("タスク取得失敗");
@@ -395,7 +437,12 @@ async function getTasks() {
 async function deleteTask(id: number) {
     const response = await fetch(
         "http://3.106.199.1:8080/tasks/" + id,
-        { method: "DELETE"}
+         {
+            method: "DELETE",
+            headers: {
+                "Authorization": "Bearer " + getToken()
+            }
+        }
     )
     if (!response.ok) {
         throw new Error("削除失敗");
@@ -406,14 +453,14 @@ async function deleteTask(id: number) {
 async function updateTask(task: Task) {
     const response = await fetch(
         "http://3.106.199.1:8080/tasks/" + task.id,
-        {
+ {
             method: "PUT",
-
             headers: {
-			"Content-Type": "application/json"
-		},
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + getToken()
+            },
 
-		body: JSON.stringify(task)
+		    body: JSON.stringify(task)
     })
     if (!response.ok) {
         throw new Error("更新失敗");
@@ -429,7 +476,8 @@ async function createTask(task: NewTask) {
         {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + getToken()
             },
             body: JSON.stringify(task)
         }
@@ -440,8 +488,35 @@ async function createTask(task: NewTask) {
     await getTasks();
 }
 
+function getToken(): string {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        throw new Error("no token");
+    }
+    return token;
+}
+
+function isLoggedIn(): boolean {
+    return localStorage.getItem("token") !== null;
+}
+
+function renderAuthState() {
+
+    if (isLoggedIn()) {
+        loginDisplay!.style.display = "none";
+        appDisplay!.style.display = "block";
+    } else {
+        loginDisplay!.style.display = "block";
+        appDisplay!.style.display = "none";
+    }
+}
+
 async function init() {
-    await getTasks();
+      renderAuthState();
+
+    if (isLoggedIn()) {
+        await getTasks();
+    }
 }
 
 init();

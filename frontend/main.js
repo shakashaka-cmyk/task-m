@@ -14,6 +14,7 @@ const calendar = document.getElementById("calendar");
 const nextMonthButton = document.getElementById("next-month");
 const prevMonthButton = document.getElementById("prev-month");
 const dateDisplay = document.getElementById("date");
+const appDisplay = document.getElementById("app-display")
 //課題追加フォームへの遷移
 if (addButton && addTaskDisplay && displaying) {
     addButton.addEventListener('click', () => {
