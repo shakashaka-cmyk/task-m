@@ -155,7 +155,7 @@ func deleteTask(w http.ResponseWriter, r *http.Request) {
 		AND user_id = ?
     `,
 		id,
-		user_id,
+		userID,
 	)
 
 	if err != nil {
@@ -207,7 +207,7 @@ func updateTask(w http.ResponseWriter, r *http.Request) {
 		task.Importance,
 		task.Completed,
 		id,
-		user_id,
+		userID,
 	)
 
 	if err != nil {
