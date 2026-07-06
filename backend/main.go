@@ -9,14 +9,14 @@ import (
 	"strconv"
 	"strings"
 
-	_ "github.com/mattn/go-sqlite3"
 	"github.com/golang-jwt/jwt/v5"
+	_ "github.com/mattn/go-sqlite3"
 	"golang.org/x/crypto/bcrypt"
 )
 
 func getTasks(w http.ResponseWriter, r *http.Request) {
 
-		userID, err := getUserID(r)
+	userID, err := getUserID(r)
 
 	if err != nil {
 		http.Error(w, "unauthorized", 401)
@@ -28,7 +28,7 @@ func getTasks(w http.ResponseWriter, r *http.Request) {
 		FROM tasks
 		WHERE user_id = ?
 	`,
-		userID,)
+		userID)
 
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -90,7 +90,6 @@ func createTask(w http.ResponseWriter, r *http.Request) {
 		"Access-Control-Allow-Origin",
 		"*",
 	)
-
 
 	userID, err := getUserID(r)
 
@@ -262,7 +261,7 @@ func registerUser(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("registered"))
 }
 
-func  getUserID(r *http.Request) (int, error) {
+func getUserID(r *http.Request) (int, error) {
 	authHeader := r.Header.Get("Authorization")
 
 	tokenString := strings.TrimPrefix(
@@ -293,18 +292,18 @@ func  getUserID(r *http.Request) (int, error) {
 func loginUser(w http.ResponseWriter, r *http.Request) {
 	type LoginRequest struct {
 		Username string `json:"username"`
-        Password string `json:"password"`
+		Password string `json:"password"`
 	}
 
 	var req LoginRequest
 
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-        http.Error(w, err.Error(), 400)
-        return
-    }
+		http.Error(w, err.Error(), 400)
+		return
+	}
 
-	var userID int 
+	var userID int
 	var passwordHash string
 
 	err = db.QueryRow(`
@@ -312,33 +311,33 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
         FROM users
         WHERE username = ?
     `,
-        req.Username,
-    ).Scan(
-        &userID,
-        &passwordHash,
-    )
+		req.Username,
+	).Scan(
+		&userID,
+		&passwordHash,
+	)
 
 	if err != nil {
-        http.Error(w, "invalid username", 401)
-        return
-    }
+		http.Error(w, "invalid username", 401)
+		return
+	}
 
-	 err = bcrypt.CompareHashAndPassword(
-        []byte(passwordHash),
-        []byte(req.Password),
-    )
+	err = bcrypt.CompareHashAndPassword(
+		[]byte(passwordHash),
+		[]byte(req.Password),
+	)
 
-    if err != nil {
-        http.Error(w, "invalid password", 401)
-        return
-    }
+	if err != nil {
+		http.Error(w, "invalid password", 401)
+		return
+	}
 
 	token := jwt.NewWithClaims(
-	jwt.SigningMethodHS256,
-	jwt.MapClaims{
-		"user_id": userID,
-	},
-)
+		jwt.SigningMethodHS256,
+		jwt.MapClaims{
+			"user_id": userID,
+		},
+	)
 
 	tokenString, err := token.SignedString(
 		[]byte(jwtSecret),
@@ -355,9 +354,13 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 }
 
 var db *sql.DB
-const jwtSecret = "super-secret-key"
+var jwtSecret = os.Getenv("JWT_SECRET")
 
 func main() {
+	if jwtSecret == "" {
+		panic("JWT_SECRET environment variable is not set")
+	}
+
 	var err error
 
 	db, err = sql.Open(
@@ -415,7 +418,7 @@ func main() {
 
 	mux.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
 
-    if r.Method == "POST" {
+		if r.Method == "POST" {
 			loginUser(w, r)
 			return
 		}
