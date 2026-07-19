@@ -94,14 +94,28 @@
 
 <div id="login-display">
     <form id="login-form">
-        <input id="login-username">
-        <input id="login-password">
-        <button>ログイン</button>
+        ユーザー名:<input id="login-username">
+        パスワード:<input id="login-password" type="password">
+        <button id="login-button">
+            ログイン
+        </button>
+        <button id="register-buttonr">
+            新規登録
+        </button>
     </form>
+</div>
 
-    <button id="show-register">
-        新規登録
-    </button>
+<div id="register-display">
+    <form id="register-form">
+        ユーザー名を入力<input id="register-username">
+        パスワードを入力<input id="register-password" type="password">
+        <button id="register-button">
+            新規登録
+        </button>
+        <button id="register-back-button">
+            ログイン画面に戻る
+        </button>
+    </form>
 </div>
 
 <script type="module" src="main.ts"></script>
