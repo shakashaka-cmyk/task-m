@@ -157,3 +157,8 @@ header {
 #login-display {
     display: none;
 }
+
+#login-form {
+    display: flex;
+    flex-direction: column;
+}
