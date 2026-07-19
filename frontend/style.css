@@ -154,11 +154,7 @@ header {
     font-weight: bold;
 }
 
-#login-display {
-    display: none;
-}
-
-#login-form {
+.login-form {
     display: flex;
     flex-direction: column;
 }
