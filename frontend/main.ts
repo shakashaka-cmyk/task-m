@@ -21,6 +21,9 @@ const appDisplay = document.getElementById("app-display")
 const container = document.getElementById("top-priority-list")
 const loginDisplay = document.getElementById("login-display");
 const loginForm = document.getElementById("login-form") as HTMLFormElement;
+const registerButton = document.getElementById("register-button")
+const registerDisplay = document.getElementById("register-display")
+const registerForm = document.getElementById("register-form")
 
 //課題追加フォームへの遷移
 if (addButton && addTaskDisplay && displaying && calendarDisplay) { 
@@ -521,3 +524,12 @@ async function init() {
 
 init();
 
+//登録画面への遷移
+registerButton?.addEventListener("click", () => {
+if (registerDisplay) {
+    registerDisplay.style.display = "block"
+  }
+  if (loginDisplay) {
+    loginDisplay.style.display = "none"
+  }
+})
