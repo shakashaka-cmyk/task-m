@@ -21,7 +21,7 @@ const appDisplay = document.getElementById("app-display")
 const container = document.getElementById("top-priority-list")
 const loginDisplay = document.getElementById("login-display");
 const loginForm = document.getElementById("login-form") as HTMLFormElement;
-const registerButton = document.getElementById("register-button")
+const registerDisplayButton = document.getElementById("register-display-button")
 const registerDisplay = document.getElementById("register-display")
 const registerForm = document.getElementById("register-form")
 
@@ -525,7 +525,7 @@ async function init() {
 init();
 
 //登録画面への遷移
-registerButton?.addEventListener("click", () => {
+registerDisplayButton?.addEventListener("click", () => {
 if (registerDisplay) {
     registerDisplay.style.display = "block"
   }
