@@ -427,7 +427,11 @@ async function getTasks() {
     }
 
     const data: Task[] = await response.json();
-    tasks = data;
+
+    console.log("API response:", data);
+    console.log("data is array:", Array.isArray(data));
+
+    tasks = data || [];
 
     renderAllTasks();
 
@@ -589,9 +593,3 @@ registerBackButton?.addEventListener("click", () => {
     registerForm.reset();
     await getTasks();
 })
-
-console.log("taskList:", taskList);
-console.log("endList:", endList);
-console.log("displayi:", displaying);
-console.log("calendar:", calendar);
-console.log("dateDisplay:", dateDisplay);
