@@ -188,6 +188,7 @@ function renderCalendar(currentYear :number, currentMonth :number) {
         new Date(currentYear, currentMonth + 1, 0).getDate();
         for (let i = 0; i < firstDay; i++) {
             const empty = document.createElement("div");
+            empty.classList.add("day"); 
             calendar.appendChild(empty);
         }
         for (let day = 1; day <= lastDate; day++) {
