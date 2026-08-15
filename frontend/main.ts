@@ -8,6 +8,7 @@ const taskList = document.getElementById("task-list");
 const endList = document.getElementById("end-list");
 const addTaskForm = document.getElementById("add-task-form") as HTMLFormElement;
 const editTaskDisplay = document.getElementById("edit-task-display");
+const editTaskForm = document.getElementById("edit-task-form") as HTMLFormElement;
 const editTaskButton = document.getElementById("edit-task-button");
 const editCancelButton = document.getElementById("edit-cancel-button");
 const deleteTaskButton = document.getElementById("delete-task-button");
@@ -135,8 +136,8 @@ function BackDisplay() {
 }
 
 //editTaskButtonのアドイベ
-if (editTaskButton && editTaskDisplay && displaying) {      
-editTaskDisplay.addEventListener("submit", async (e) => {
+if (editTaskButton && editTaskForm && displaying) {      
+editTaskForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const title = (document.getElementById("edit-title") as HTMLInputElement).value;
