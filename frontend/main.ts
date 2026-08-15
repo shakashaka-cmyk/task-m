@@ -587,4 +587,5 @@ registerBackButton?.addEventListener("click", () => {
     }
     
     registerForm.reset();
+    await getTasks();
 })
