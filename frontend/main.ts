@@ -23,8 +23,8 @@ const loginDisplay = document.getElementById("login-display");
 const loginForm = document.getElementById("login-form") as HTMLFormElement;
 const registerDisplayButton = document.getElementById("register-display-button")
 const registerDisplay = document.getElementById("register-display")
-const registerForm = document.getElementById("register-form")
-const registerBackButton = document.getElementById("register-back-button")
+const registerBackButton = document.getElementById("register-back-button")　
+const registerForm = document.getElementById("register-form") as HTMLFormElement;
 
 //課題追加フォームへの遷移
 if (addButton && addTaskDisplay && displaying && calendarDisplay) { 
@@ -544,3 +544,46 @@ registerBackButton?.addEventListener("click", () => {
     loginDisplay.style.display = "block"
   }
  })
+
+ //登録フォームの送信
+ registerForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    
+    const username = (document.getElementById("register-username") as HTMLInputElement).value;
+    const password = (document.getElementById("register-password") as HTMLInputElement).value;
+
+    if (!username || !password) {
+        alert("ユーザー名とパスワードを入力してください");
+        return;
+    }
+
+    const response = await fetch(
+        "http://3.106.199.1:8080/register",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                username,
+                password
+            })
+        }
+    );
+
+    if (!response.ok) {
+        alert("登録失敗");
+        return;
+    }
+
+    alert("登録成功。ログインしてください");
+    
+    if (registerDisplay) {
+        registerDisplay.style.display = "none";
+    }
+    if (loginDisplay) {
+        loginDisplay.style.display = "block";
+    }
+    
+    registerForm.reset();
+})
