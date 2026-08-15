@@ -24,6 +24,7 @@ const loginForm = document.getElementById("login-form") as HTMLFormElement;
 const registerDisplayButton = document.getElementById("register-display-button")
 const registerDisplay = document.getElementById("register-display")
 const registerForm = document.getElementById("register-form")
+const registerBackButton = document.getElementById("register-back-button")
 
 //課題追加フォームへの遷移
 if (addButton && addTaskDisplay && displaying && calendarDisplay) { 
@@ -524,12 +525,22 @@ async function init() {
 
 init();
 
-//登録画面への遷移
+//新規登録画面への遷移ボタン
 registerDisplayButton?.addEventListener("click", () => {
-if (registerDisplay) {
+    if (registerDisplay) {
     registerDisplay.style.display = "block"
   }
   if (loginDisplay) {
     loginDisplay.style.display = "none"
   }
 })
+
+//ログイン画面に戻るボタン
+registerBackButton?.addEventListener("click", () => {
+    if (registerDisplay) {
+    registerDisplay.style.display = "none"
+  }
+    if (loginDisplay) {
+    loginDisplay.style.display = "block"
+  }
+ })
