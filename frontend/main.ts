@@ -589,3 +589,9 @@ registerBackButton?.addEventListener("click", () => {
     registerForm.reset();
     await getTasks();
 })
+
+console.log("taskList:", taskList);
+console.log("endList:", endList);
+console.log("displayi:", displaying);
+console.log("calendar:", calendar);
+console.log("dateDisplay:", dateDisplay);
