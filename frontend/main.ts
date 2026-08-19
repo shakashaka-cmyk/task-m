@@ -106,9 +106,9 @@ const renderAllTasks = () => {
                 ...task, 
                 completed: !task.completed
             });
-                        
+              
+            await getTasks()
             BackDisplay();
-            renderCalendar(currentYear, currentMonth);
         });
     }
 }
@@ -159,8 +159,8 @@ editTaskForm.addEventListener("submit", async (e) => {
         importance
     });
 
+    await getTasks();
     BackDisplay();
-    renderCalendar(currentYear, currentMonth)
 })}
 
 //editCancelButtonのアドイベ
@@ -176,8 +176,8 @@ if (deleteTaskButton) {
     deleteTaskButton.addEventListener("click", async () => {
         if (editingTaskId === null) return;
         await deleteTask(editingTaskId);
+        await getTasks();
         BackDisplay();
-        renderCalendar(2026, 7);
     })
 }
 
@@ -436,9 +436,6 @@ async function getTasks() {
     }
 
     const data: Task[] = await response.json();
-
-    console.log("API response:", data);
-    console.log("data is array:", Array.isArray(data));
 
     tasks = data || [];
 
