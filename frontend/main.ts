@@ -171,11 +171,13 @@ if (deleteTaskButton) {
         if (editingTaskId === null) return;
         await deleteTask(editingTaskId);
     })
+    BackDisplay();
+    renderCalendar(2026, 7);
 }
 
 //カレンダー表示
 let currentYear = 2026
-let currentMonth = 5
+let currentMonth = 7
 
 
 
