@@ -96,18 +96,21 @@ const renderAllTasks = () => {
             completeTaskButton.textContent = task.completed ? "未完了に戻す" : "完了";
         });
     })
-}
+        //completeTaskButtonのアドイベ
+    if (completeTaskButton) {completeTaskButton.addEventListener("click", async () => {
+            const task = tasks.find(t => t.id === editingTaskId);
 
-if (completeTaskButton) {completeTaskButton.addEventListener("click", async () => {
-        const task = tasks.find(t => t.id === editingTaskId);
+            if (!task) return;
 
-        if (!task) return;
-
-        await updateTask({
-            ...task, 
-            completed: !task.completed
+            await updateTask({
+                ...task, 
+                completed: !task.completed
+            });
+                        
+            BackDisplay();
+            renderCalendar(currentYear, currentMonth);
         });
-    });
+    }
 }
 
 //タスクの重要性表示
@@ -155,6 +158,9 @@ editTaskForm.addEventListener("submit", async (e) => {
         deadline,
         importance
     });
+
+    BackDisplay();
+    renderCalendar(currentYear, currentMonth)
 })}
 
 //editCancelButtonのアドイベ
@@ -170,9 +176,9 @@ if (deleteTaskButton) {
     deleteTaskButton.addEventListener("click", async () => {
         if (editingTaskId === null) return;
         await deleteTask(editingTaskId);
+        BackDisplay();
+        renderCalendar(2026, 7);
     })
-    BackDisplay();
-    renderCalendar(2026, 7);
 }
 
 //カレンダー表示
@@ -269,7 +275,7 @@ function renderCalendar(currentYear :number, currentMonth :number) {
                 (document.getElementById("edit-importance") as HTMLSelectElement).value =
                 String(task.importance);
 
-                 completeTaskButton!.textContent =
+                completeTaskButton!.textContent =
                 task.completed ? "未完了に戻す" : "完了";
 
                 editingTaskId = task.id;
