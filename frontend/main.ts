@@ -35,9 +35,8 @@ const registerForm = document.getElementById("register-form") as HTMLFormElement
 //課題追加フォームへの遷移
 if (menuButton && menuPanel) {
     menuButton.addEventListener('click', () => {
-        menuPanel.style.display = "block";
-        displayUsername()
         switchMenuPanel()
+        displayUsername()
     })
 }
 
