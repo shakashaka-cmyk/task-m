@@ -37,6 +37,7 @@ if (menuButton && menuPanel) {
     menuButton.addEventListener('click', () => {
         menuPanel.style.display = "block";
         displayUsername()
+        switchMenuPanel()
     })
 }
 
@@ -47,15 +48,25 @@ function displayUsername() {
     }
 }
 
-if (closeMenuButton && menuPanel) {closeMenuButton.addEventListener('click', () => {
-        menuPanel.style.display = "none";
-    })
+function switchMenuPanel() {
+    if (menuPanel) {
+        if (menuPanel.style.display == "none") {
+            menuPanel.style.display = "block";
+        } else {menuPanel.style.display = "none"}
+    }
 }
 
+if (closeMenuButton && menuPanel) 
+    {closeMenuButton.addEventListener('click', () => {
+        switchMenuPanel()
+    })
+}
+    
 logoutButton?.addEventListener("click", () => {
     localStorage.removeItem("token");
     localStorage.removeItem("username");
     renderAuthState();
+    switchMenuPanel();
 })
 
 if (addButton && addTaskDisplay && displaying && calendarDisplay) { 
