@@ -374,6 +374,7 @@ loginForm?.addEventListener("submit", async (e) => {
     const data = await response.json();
 
     localStorage.setItem("token", data.token);
+    localStorage.setItem("username", username);  
 
     renderAuthState();
     await getTasks();

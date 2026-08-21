@@ -25,6 +25,10 @@ header {
     transform: scale(1.1);
 }
 
+#menu-panel {
+    display: none;
+}
+
 .task-list li{
     display: none;
 }
