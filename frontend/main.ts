@@ -1,6 +1,11 @@
 import type { Task } from "./task";
 import * as holiday_jp from "@holiday-jp/holiday_jp";
 
+const menuButton = document.getElementById("menu-button");
+const menuPanel = document.getElementById("menu-panel");
+const usernameDisplay = document.getElementById("username-display");
+const logoutButton = document.getElementById("logout-button");
+const closeMenuButton = document.getElementById("close-menu-button");
 const addTaskDisplay = document.getElementById("add-task-display");
 const addButton = document.getElementById("add-button");
 const displaying = document.getElementById("displaying");
@@ -28,10 +33,35 @@ const registerBackButton = document.getElementById("register-back-button")　
 const registerForm = document.getElementById("register-form") as HTMLFormElement;
 
 //課題追加フォームへの遷移
+if (menuButton && menuPanel) {
+    menuButton.addEventListener('click', () => {
+        menuPanel.style.display = "block";
+        displayUsername()
+    })
+}
+
+function displayUsername() {
+    const username = localStorage.getItem("username");
+    if (usernameDisplay) {
+        usernameDisplay.textContent = username || "不明";
+    }
+}
+
+if (closeMenuButton && menuPanel) {closeMenuButton.addEventListener('click', () => {
+        menuPanel.style.display = "none";
+    })
+}
+
+logoutButton?.addEventListener("click", () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    renderAuthState();
+})
+
 if (addButton && addTaskDisplay && displaying && calendarDisplay) { 
     addButton.addEventListener('click', () => {
         displaying.style.display = "none";
-        calendarDisplay.style.display = "none"
+        calendarDisplay.style.display = "none";
         addTaskDisplay.style.display = "block";
 
         addTaskForm.reset();
@@ -529,9 +559,10 @@ function renderAuthState() {
 async function init() {
       renderAuthState();
 
-    if (isLoggedIn()) {
-        await getTasks();
+    if (!isLoggedIn()) {
+       return
     }
+    await getTasks();
 }
 
 init();
