@@ -27,6 +27,15 @@ header {
 
 #menu-panel {
     display: none;
+    position: fixed;
+    left: 0;
+    top: 60px;
+    width: 250px;
+    background-color: #f8f9fa;
+    color: #333;
+    padding: 20px;
+    z-index: 1000;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
 }
 
 .task-list li{
