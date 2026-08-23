@@ -74,7 +74,43 @@
         </select>
         <button type="submit" id="add-task-button">追加</button>
     </form>
+
+    <hr>
+
+    <div id="bulk-add-section">
+        <h3>一括追加</h3>
+        <label>
+            <input type="checkbox" id="enable-bulk-add"> 一括追加を使用
+        </label>
+        
+        <div id="bulk-options" style="display: none;">
+            <label>繰り返し:</label>
+            <select id="repeat-type">
+                <option value="daily">毎日</option>
+                <option value="weekly">週1回</option>
+                <option value="specific-days">特定の曜日</option>
+            </select>
+
+            <div id="days-selector" style="display: none;">
+                <label>曜日を選択:</label>
+                <label><input type="checkbox" value="0"> 日</label>
+                <label><input type="checkbox" value="1"> 月</label>
+                <label><input type="checkbox" value="2"> 火</label>
+                <label><input type="checkbox" value="3"> 水</label>
+                <label><input type="checkbox" value="4"> 木</label>
+                <label><input type="checkbox" value="5"> 金</label>
+                <label><input type="checkbox" value="06"> 土</label>
+            </div>
+
+            <label>期間:</label>
+            <input type="date" id="bulk-start-date">
+            <input type="date" id="bulk-end-date">
+
+            <button type="button" id="bulk-add-button">一括追加</button>
+        </div>
+    </div>
 </div>
+
 
 <div id="edit-task-display">
     <div id="edit-task-text">

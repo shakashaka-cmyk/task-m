@@ -175,7 +175,7 @@ function BackDisplay() {
         displaying.style.display = "block";
         calendarDisplay.style.display = "block"
         editTaskDisplay.style.display = "none";
-    }
+    } 
 }
 
 //editTaskButtonのアドイベ
@@ -459,7 +459,7 @@ function getUrgencyClass(task: Task): string {
     } else if (urgency >= 0.5) {
         return "urgency-middle";
     } else {
-    return "urgency-low";
+        return "urgency-low";
     }
 }
 
