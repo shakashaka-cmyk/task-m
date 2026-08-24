@@ -190,7 +190,7 @@ regularAddButton?.addEventListener("click", async () => {
     dayCheckboxes.forEach(checkbox => checkbox.checked = false);
     regularStartDate.value = "";
     regularEndDate.value = "";
-    
+    BackDisplay();
 });
 
 //タスク表示
