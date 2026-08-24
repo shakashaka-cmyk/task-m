@@ -100,9 +100,13 @@ addTaskDisplay?.addEventListener('submit', async (e) => {
     await createTask(task);   // ← DBに1件追加
 });
 
-regularTaskAdd?.addEventListener("check", () => {
+regularTaskAdd?.addEventListener("change", () => {
     if (regularTaskOptions) {
-        regularTaskOptions.style.display = "block"
+        if (regularTaskOptions.style.display == "none") {
+            regularTaskOptions.style.display = "block"
+        } else {
+            regularTaskOptions.style.display = "none"
+        }
     }
 })
 
