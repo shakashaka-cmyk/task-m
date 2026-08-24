@@ -12,7 +12,7 @@ const displaying = document.getElementById("displaying");
 const taskList = document.getElementById("task-list");  
 const endList = document.getElementById("end-list");
 const addTaskForm = document.getElementById("add-task-form") as HTMLFormElement;
-const regularTaskAdd = document.getElementById("regular-task-add");
+const regularTaskAdd = document.getElementById("regular-task-add") as HTMLInputElement;
 const regularTaskOptions = document.getElementById("regular-task-options");
 const editTaskDisplay = document.getElementById("edit-task-display");
 const editTaskForm = document.getElementById("edit-task-form") as HTMLFormElement;
@@ -102,7 +102,7 @@ addTaskDisplay?.addEventListener('submit', async (e) => {
 
 regularTaskAdd?.addEventListener("change", () => {
     if (regularTaskOptions) {
-        if (regularTaskOptions.style.display == "none") {
+        if (regularTaskAdd.checked) {
             regularTaskOptions.style.display = "block"
         } else {
             regularTaskOptions.style.display = "none"
