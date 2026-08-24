@@ -15,6 +15,13 @@ const endList = document.getElementById("end-list");
 const addTaskForm = document.getElementById("add-task-form") as HTMLFormElement;
 const regularTaskAdd = document.getElementById("regular-task-add") as HTMLInputElement;
 const regularTaskOptions = document.getElementById("regular-task-options");
+const regularAddButton = document.getElementById("regular-add-button");
+const regularTaskTitle = document.getElementById("regular-task-title") as HTMLInputElement;
+const regularImportance = document.getElementById("regular-importance") as HTMLSelectElement;
+const regularStartDate = document.getElementById("regular-start-date") as HTMLInputElement;
+const regularEndDate = document.getElementById("regular-end-date") as HTMLInputElement;
+const selectAllDays = document.getElementById("select-all-days") as HTMLInputElement;
+const dayCheckboxes = document.querySelectorAll(".day-checkbox") as NodeListOf<HTMLInputElement>;
 const editTaskDisplay = document.getElementById("edit-task-display");
 const editTaskForm = document.getElementById("edit-task-form") as HTMLFormElement;
 const editTaskButton = document.getElementById("edit-task-button");
@@ -114,6 +121,77 @@ regularTaskAdd?.addEventListener("change", () => {
         }
     }
 })
+
+selectAllDays?.addEventListener("change", () => {
+    dayCheckboxes.forEach(checkbox => {
+        checkbox.checked = selectAllDays.checked;
+    });
+});
+
+// 定期タスク追加ボタン
+regularAddButton?.addEventListener("click", async () => {
+    const title = regularTaskTitle.value;
+    const importance = Number(regularImportance.value) as 3 | 2 | 1;
+    const startDate = new Date(regularStartDate.value);
+    const endDate = new Date(regularEndDate.value);
+
+    // チェックされた曜日を取得
+    const selectedDays: number[] = [];
+    dayCheckboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+            selectedDays.push(Number(checkbox.value));
+        }
+    });
+
+    if (selectedDays.length === 0) {
+        alert("曜日を選択してください");
+        return;
+    }
+
+    if (!title) {
+        alert("課題名を入力してください");
+        return;
+    }
+
+    // 開始日～終了日の間でタスクを生成
+    const tasksToAdd: NewTask[] = [];
+    let currentDate = new Date(startDate);
+
+    while (currentDate <= endDate) {
+        const dayOfWeek = currentDate.getDay();
+        
+        // チェックされた曜日なら追加
+        if (selectedDays.includes(dayOfWeek)) {
+            const year = currentDate.getFullYear();
+            const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+            const date = String(currentDate.getDate()).padStart(2, "0");
+            const deadline = `${year}-${month}-${date}`;
+
+            tasksToAdd.push({
+                title,
+                deadline,
+                importance,
+                completed: false
+            });
+        }
+
+        currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    // 全てのタスクを追加
+    for (const task of tasksToAdd) {
+        await createTask(task);
+    }
+
+    // フォームをリセット
+    regularTaskTitle.value = "";
+    regularTaskAdd.checked = false;
+    regularTaskOptions!.style.display = "none";
+    dayCheckboxes.forEach(checkbox => checkbox.checked = false);
+    regularStartDate.value = "";
+    regularEndDate.value = "";
+    
+});
 
 //タスク表示
 let editingTaskId: number | null = null; //編集中のタスクIDを保持
