@@ -7,6 +7,7 @@ const usernameDisplay = document.getElementById("username-display");
 const logoutButton = document.getElementById("logout-button");
 const closeMenuButton = document.getElementById("close-menu-button");
 const addTaskDisplay = document.getElementById("add-task-display");
+const addCancelButton = document.getElementById("add-cancel-button");
 const addButton = document.getElementById("add-button");
 const displaying = document.getElementById("displaying");
 const taskList = document.getElementById("task-list");  
@@ -79,6 +80,10 @@ if (addButton && addTaskDisplay && displaying && calendarDisplay) {
         addTaskForm.reset();
     })
 };
+
+addCancelButton?.addEventListener("click",() => {
+    BackDisplay()
+})
 
 //課題追加フォームの送信イベント
 addTaskDisplay?.addEventListener('submit', async (e) => {
