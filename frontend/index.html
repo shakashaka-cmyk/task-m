@@ -77,36 +77,36 @@
 
     <hr>
 
-    <div id="bulk-add-section">
-        <h3>一括追加</h3>
+    <div id="add-regular-task-section">
+        <h3>定期タスク追加</h3>
         <label>
-            <input type="checkbox" id="enable-bulk-add"> 一括追加を使用
+            <input type="checkbox" id="regular-task-add"> 定期タスクを追加
         </label>
         
-        <div id="bulk-options" style="display: none;">
-            <label>繰り返し:</label>
-            <select id="repeat-type">
-                <option value="daily">毎日</option>
-                <option value="weekly">週1回</option>
-                <option value="specific-days">特定の曜日</option>
-            </select>
-
-            <div id="days-selector" style="display: none;">
-                <label>曜日を選択:</label>
-                <label><input type="checkbox" value="0"> 日</label>
-                <label><input type="checkbox" value="1"> 月</label>
-                <label><input type="checkbox" value="2"> 火</label>
-                <label><input type="checkbox" value="3"> 水</label>
-                <label><input type="checkbox" value="4"> 木</label>
-                <label><input type="checkbox" value="5"> 金</label>
-                <label><input type="checkbox" value="06"> 土</label>
+        <div id="regular-task-options" style="display: none;">
+            <label>曜日を選択:</label>
+            <div id="days-selector">
+                <label><input type="checkbox" class="day-checkbox" value="0"> 日</label>
+                <label><input type="checkbox" class="day-checkbox" value="1"> 月</label>
+                <label><input type="checkbox" class="day-checkbox" value="2"> 火</label>
+                <label><input type="checkbox" class="day-checkbox" value="3"> 水</label>
+                <label><input type="checkbox" class="day-checkbox" value="4"> 木</label>
+                <label><input type="checkbox" class="day-checkbox" value="5"> 金</label>
+                <label><input type="checkbox" class="day-checkbox" value="6"> 土</label>
+                <label><input type="checkbox" id="select-all-days"> すべて</label>
             </div>
 
-            <label>期間:</label>
-            <input type="date" id="bulk-start-date">
-            <input type="date" id="bulk-end-date">
+            <div>
+                <label>開始日:</label>
+                <input type="date" id="regular-start-date" required>
+            </div>
 
-            <button type="button" id="bulk-add-button">一括追加</button>
+            <div>
+                <label>終了日:</label>
+                <input type="date" id="regular-end-date" required>
+            </div>
+
+            <button type="button" id="regular-add-button">定期タスクを追加</button>
         </div>
     </div>
 </div>
