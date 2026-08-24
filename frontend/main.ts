@@ -12,6 +12,8 @@ const displaying = document.getElementById("displaying");
 const taskList = document.getElementById("task-list");  
 const endList = document.getElementById("end-list");
 const addTaskForm = document.getElementById("add-task-form") as HTMLFormElement;
+const regularTaskAdd = document.getElementById("regular-task-add");
+const regularTaskOptions = document.getElementById("regular-task-options");
 const editTaskDisplay = document.getElementById("edit-task-display");
 const editTaskForm = document.getElementById("edit-task-form") as HTMLFormElement;
 const editTaskButton = document.getElementById("edit-task-button");
@@ -97,6 +99,12 @@ addTaskDisplay?.addEventListener('submit', async (e) => {
     BackDisplay();
     await createTask(task);   // ← DBに1件追加
 });
+
+regularTaskAdd?.addEventListener("check", () => {
+    if (regularTaskOptions) {
+        regularTaskOptions.style.display = "block"
+    }
+})
 
 //タスク表示
 let editingTaskId: number | null = null; //編集中のタスクIDを保持
