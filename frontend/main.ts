@@ -27,6 +27,8 @@ const editTaskForm = document.getElementById("edit-task-form") as HTMLFormElemen
 const editTaskButton = document.getElementById("edit-task-button");
 const editCancelButton = document.getElementById("edit-cancel-button");
 const deleteTaskButton = document.getElementById("delete-task-button");
+const editSeriesButton = document.getElementById("edit-series-button");
+const deleteSeriesButton = document.getElementById("delete-series-button");
 const completeTaskButton = document.getElementById("complete-task-button");
 const calendar = document.getElementById("calendar")
 const calendarDisplay = document.getElementById("calendar-display")
@@ -316,9 +318,59 @@ if (deleteTaskButton) {
     })
 }
 
+function getSeriesTasks(taskId: number): Task[] {
+    const currentTask = tasks.find(t => t.id === taskId);
+    if (!currentTask) return [];
+    
+    return tasks.filter(t => 
+        t.title === currentTask.title && 
+        t.importance === currentTask.importance
+    );
+}
+
+editSeriesButton?.addEventListener("click", async () => {
+    if (editingTaskId === null) return;
+
+    const title = (document.getElementById("edit-title") as HTMLInputElement).value;
+    const deadline = (document.getElementById("edit-deadline") as HTMLInputElement).value;
+    const importance = Number(
+        (document.getElementById("edit-importance") as HTMLSelectElement).value
+    ) as 1|2|3;
+
+    const seriesToUpdate = getSeriesTasks(editingTaskId);
+    for (const t of seriesToUpdate) {
+        await updateTask({
+            ...t,
+            title,
+            deadline,
+            importance
+        });
+    }
+
+    await getTasks();
+    BackDisplay();
+})
+
+// 「このシリーズ全て削除」ボタン
+deleteSeriesButton?.addEventListener("click", async () => {
+    if (editingTaskId === null) return;
+
+    const confirmed = confirm("このシリーズ全て削除してもよろしいですか？");
+    if (!confirmed) return;
+
+    const seriesToDelete = getSeriesTasks(editingTaskId);
+    for (const t of seriesToDelete) {
+        await deleteTask(t.id);
+    }
+
+    await getTasks();
+    BackDisplay();
+})
+
 //カレンダー表示
-let currentYear = 2026
-let currentMonth = 7
+const today = new Date();
+let currentYear = today.getFullYear(); 
+let currentMonth = today.getMonth();  
 
 
 
