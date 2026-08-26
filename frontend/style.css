@@ -215,6 +215,16 @@ header {
     cursor: pointer;
 }
 
+#register-display-button {
+    padding: 10px 30px;
+    margin: 10px 30px;
+    border: none;
+    border-radius: 4px;
+    color: #333;
+    background-color: #ccc;
+    cursor: pointer;
+}
+
 #register-display {
     display: none;
 }
