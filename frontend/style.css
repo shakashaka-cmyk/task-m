@@ -220,8 +220,8 @@ header {
     margin: 10px 30px;
     border: none;
     border-radius: 4px;
-    color: #333;
-    background-color: #ccc;
+    color: #ccc;
+    background-color: #333;
     cursor: pointer;
 }
 
