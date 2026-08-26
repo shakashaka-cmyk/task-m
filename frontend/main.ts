@@ -322,9 +322,8 @@ function getSeriesTasks(taskId: number): Task[] {
     const currentTask = tasks.find(t => t.id === taskId);
     if (!currentTask) return [];
     
-    return tasks.filter(t => 
-        t.title === currentTask.title && 
-        t.importance === currentTask.importance
+    return tasks.filter(
+        t => t.title === currentTask.title
     );
 }
 
