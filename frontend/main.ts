@@ -337,12 +337,23 @@ editSeriesButton?.addEventListener("click", async () => {
         (document.getElementById("edit-importance") as HTMLSelectElement).value
     ) as 1|2|3;
 
+    // 現在のタスクの日付を取得
+    const currentTask = tasks.find(t => t.id === editingTaskId);
+    if (!currentTask) return;
+
+    // 日付が変わっていないか確認
+    if (deadline !== currentTask.deadline) {
+        alert("シリーズ全て編集では日付は変更できません");
+        return;
+    }
+
+    // 日付が変わってなければシリーズ全て編集
     const seriesToUpdate = getSeriesTasks(editingTaskId);
     for (const t of seriesToUpdate) {
         await updateTask({
             ...t,
             title,
-            deadline,
+            deadline,  // 変わってない日付をそのまま使用
             importance
         });
     }
