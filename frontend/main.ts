@@ -353,7 +353,6 @@ editSeriesButton?.addEventListener("click", async () => {
         await updateTask({
             ...t,
             title,
-            deadline,  // 変わってない日付をそのまま使用
             importance
         });
     }
