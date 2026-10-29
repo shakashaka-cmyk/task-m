@@ -755,7 +755,7 @@ registerBackButton?.addEventListener("click", () => {
  })
 
  //登録フォームの送信
- registerForm.addEventListener("submit", async (e) => {
+registerForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     
     const username = (document.getElementById("register-username") as HTMLInputElement).value;
