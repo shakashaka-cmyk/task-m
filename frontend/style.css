@@ -225,10 +225,6 @@ header {
     cursor: pointer;
 }
 
-#register-display {
-    display: none;
-}
-
 #register-form {
     display: flex;
     flex-direction: column;
