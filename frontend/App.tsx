@@ -1,6 +1,7 @@
 import { useState } from "react";
 import LoginForm from "./components/LoginForm";
 import RegisterForm from "./components/RegisterForm";
+import MainScreen from "./components/MainScreen";
 
 type AuthView = "login" | "register";
 
@@ -11,7 +12,7 @@ function App() {
   const [authView, setAuthView] = useState<AuthView>("login");
 
   if (isLoggedIn) {
-    return <p>ログイン中（ここにメイン画面が入る）</p>;
+    return <MainScreen />;
   }
 
   if (authView === "register") {
