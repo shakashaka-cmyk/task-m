@@ -6,9 +6,9 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      '/tasks': 'http://3.106.199.1:8080',
-      '/login': 'http://3.106.199.1:8080',
-      '/register': 'http://3.106.199.1:8080',
+      '/tasks': 'http://localhost:8080',
+      '/login': 'http://localhost:8080',
+      '/register': 'http://localhost:8080',
     },
   },
 })

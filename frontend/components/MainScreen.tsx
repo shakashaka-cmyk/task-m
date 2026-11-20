@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import type { Task } from "../task";
 import { getTasks } from "../api";
-import TaskList from "./TaskList.tsx";
+import TaskList from "./TaskList";
+import AddTaskForm from "./AddTaskForm"
 
 type View = "list" | "add";
 
