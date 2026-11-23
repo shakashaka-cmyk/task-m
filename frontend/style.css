@@ -49,11 +49,6 @@ header {
 #add-task-text p {
     margin: 10px
 ;}
-    
-
-#edit-task-display {
-    display: none;
-}
 
 #edit-task-text {
     display: flex;
